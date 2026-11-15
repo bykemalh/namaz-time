@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="namaz-time">
+  <schema id="me.bykemah.namaztime" path="/me/bykemah/namaztime/">
+    <key name="location-profile-json" type="s">
+      <default>""</default>
+      <summary>Selected location profile</summary>
+      <description>JSON-serialized active location profile including timezone and provider IDs.</description>
+    </key>
+    <key name="preferred-source" type="s">
+      <default>"auto"</default>
+      <summary>Preferred prayer time provider</summary>
+      <description>Data source preference: auto, imsakiyem, mtopal, or idamedya.</description>
+    </key>
+    <key name="run-in-background" type="b">
+      <default>true</default>
+      <summary>Run in background when window is closed</summary>
+      <description>Keep the background service and tray icon running after closing the main window.</description>
+    </key>
+    <key name="autostart" type="b">
+      <default>false</default>
+      <summary>Start automatically at login</summary>
+      <description>Request background autostart permission via XDG Background Portal.</description>
+    </key>
+    <key name="show-tray-label" type="b">
+      <default>true</default>
+      <summary>Show remaining time next to tray icon</summary>
+      <description>Display the remaining time text next to the GNOME top-bar tray icon.</description>
+    </key>
+    <key name="tray-label-format" type="s">
+      <default>"prayer-and-time"</default>
+      <summary>Tray label format</summary>
+      <description>Format for the panel label: prayer-and-time or time-only.</description>
+    </key>
+    <key name="show-seconds" type="b">
+      <default>true</default>
+      <summary>Show seconds in main countdown</summary>
+      <description>Display live seconds in the main window countdown timer.</description>
+    </key>
+  </schema>
+</schemalist>

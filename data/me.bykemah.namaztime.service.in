@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=me.bykemah.namaztime
+Exec=@bindir@/namaz-time --gapplication-service

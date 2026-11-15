@@ -1,0 +1,7 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically.
+data/me.bykemah.namaztime.desktop.in
+data/me.bykemah.namaztime.gschema.xml
+data/me.bykemah.namaztime.metainfo.xml.in
+src/shortcuts-dialog.ui
+src/window.ui

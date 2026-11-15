@@ -1,0 +1,32 @@
+[package]
+name = "namaz-time"
+version = "0.1.0"
+edition = "2021"
+description = "GNOME / Libadwaita Diyanet namaz vakitleri ve sistem tepsisi uygulaması"
+license = "MIT"
+authors = ["Kemal <https://github.com/bykemalh>"]
+repository = "https://github.com/bykemalh/namaz-time"
+homepage = "https://github.com/bykemalh/namaz-time"
+readme = "README.md"
+keywords = ["gnome", "gtk4", "libadwaita", "prayer-times", "namaz"]
+categories = ["gui"]
+
+[dependencies]
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+gtk = { version = "0.9", package = "gtk4", features = ["gnome_47"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+reqwest = { version = "0.13", default-features = false, features = ["native-tls", "charset", "http2", "json", "query"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+jiff = "0.2"
+async-channel = "2"
+futures-util = { version = "0.3", default-features = false, features = ["alloc"] }
+zbus = { version = "6", default-features = false, features = ["tokio", "proxy", "service", "tracing"] }
+ashpd = { version = "0.14", default-features = false, features = ["tokio", "background"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[dependencies.adw]
+package = "libadwaita"
+version = "0.7"
+features = ["v1_6"]

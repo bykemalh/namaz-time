@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Namaz Vakti
+Comment=Canlı namaz vakti sayacı ve sistem tepsisi aracı
+Exec=namaz-time
+Icon=me.bykemah.namaztime
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=Namaz;Vakit;Diyanet;Prayer;GTK;
+StartupNotify=true
+DBusActivatable=true

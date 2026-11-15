@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/me/bykemah/namaztime">
+    <file preprocess="xml-stripblanks">window.ui</file>
+    <file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
+    <file>style.css</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-location-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-imsak-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-gunes-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-ogle-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-ikindi-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-aksam-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-yatsi-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-error-symbolic.svg</file>
+  </gresource>
+</gresources>

@@ -1,0 +1,57 @@
+.hero-card {
+  padding: 22px;
+  border-radius: 16px;
+}
+
+.countdown-digits {
+  font-variant-numeric: tabular-nums;
+  font-size: 3.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.prayer-time-digits {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.pill-badge {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.pill-badge-accent {
+  background-color: alpha(@accent_bg_color, 0.16);
+  color: @accent_color;
+}
+
+.pill-badge-subtle {
+  background-color: alpha(@window_fg_color, 0.08);
+  color: alpha(@window_fg_color, 0.75);
+}
+
+.prayer-row-current {
+  background-color: alpha(@accent_bg_color, 0.10);
+}
+
+.prayer-row-next {
+  background-color: alpha(@accent_bg_color, 0.05);
+}
+
+.location-chip {
+  padding: 4px 10px;
+}
+
+.hero-progress trough {
+  min-height: 6px;
+  border-radius: 999px;
+}
+
+.hero-progress progress {
+  min-height: 6px;
+  border-radius: 999px;
+}

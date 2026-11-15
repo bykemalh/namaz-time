@@ -1,0 +1,11 @@
+/_build/
+/_stage/
+/target/
+/cargo-home/
+/build-dir/
+/repo/
+/.flatpak-builder/
+*.flatpak
+/src/config.rs
+*.swp
+*~
