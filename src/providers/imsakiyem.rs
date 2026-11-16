@@ -3,6 +3,7 @@ use jiff::Timestamp;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
+use crate::i18n::{AppLang, active_lang, tr, tr_fmt};
 use crate::models::{DayTimes, LocationCandidate, ProviderIds, ProviderKind};
 use crate::providers::{ProviderError, check_response_status};
 
@@ -66,8 +67,6 @@ struct V2DistrictDto {
     name: String,
     #[serde(default)]
     diyanet_name: Option<String>,
-    #[serde(default)]
-    label: Option<String>,
     #[serde(default)]
     names: Option<LocalizedNames>,
     #[serde(default)]
@@ -161,10 +160,10 @@ pub async fn fetch_countries(client: &Client) -> Result<Vec<ImsakiyemCountry>, P
     let body: V2Envelope<Vec<ImsakiyemCountry>> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem ülke JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem countries JSON: %1", &[&e.to_string()])))?;
     if !body.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem ülkeler success=false".into(),
+            tr("Imsakiyem countries returned success=false"),
         ));
     }
     Ok(body.data.unwrap_or_default())
@@ -184,10 +183,10 @@ pub async fn fetch_states(
     let body: V1Envelope<Vec<ImsakiyemState>> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem şehir JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem cities JSON: %1", &[&e.to_string()])))?;
     if !body.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem şehirler success=false".into(),
+            tr("Imsakiyem cities returned success=false"),
         ));
     }
     Ok(body.data.unwrap_or_default())
@@ -218,11 +217,11 @@ pub async fn fetch_districts(
         let body: V2Envelope<Vec<V2DistrictDto>> = resp
             .json()
             .await
-            .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem ilçe JSON: {e}")))?;
+            .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem districts JSON: %1", &[&e.to_string()])))?;
 
         if !body.success {
             return Err(ProviderError::InvalidResponse(
-                "İmsakiyem ilçeler success=false".into(),
+                tr("Imsakiyem districts returned success=false"),
             ));
         }
 
@@ -256,11 +255,11 @@ pub async fn search_districts(
     let body: V2Envelope<Vec<V2DistrictDto>> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem arama JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem search JSON: %1", &[&e.to_string()])))?;
 
     if !body.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem arama success=false".into(),
+            tr("Imsakiyem search returned success=false"),
         ));
     }
 
@@ -282,10 +281,10 @@ pub async fn fetch_district_detail(
     let body: V2Envelope<V2DistrictDto> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem ilçe detay JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem district detail JSON: %1", &[&e.to_string()])))?;
     if !body.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem ilçe detay success=false".into(),
+            tr("Imsakiyem district detail returned success=false"),
         ));
     }
     body.data
@@ -349,15 +348,15 @@ async fn fetch_v1_monthly(
 
 pub(crate) fn parse_v2_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTimes>, ProviderError> {
     let env: V2Envelope<V2TimesPayload> = serde_json::from_str(raw)
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem v2 vakit JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem v2 times JSON: %1", &[&e.to_string()])))?;
     if !env.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem v2 success=false".into(),
+            tr("Imsakiyem v2 returned success=false"),
         ));
     }
     let payload = env
         .data
-        .ok_or_else(|| ProviderError::InvalidResponse("İmsakiyem v2 data boş".into()))?;
+        .ok_or_else(|| ProviderError::InvalidResponse(tr("Imsakiyem v2 returned empty data")))?;
 
     let mut out = Vec::with_capacity(payload.times.len());
     for row in payload.times {
@@ -385,15 +384,15 @@ pub(crate) fn parse_v2_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTim
 
 pub(crate) fn parse_v1_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTimes>, ProviderError> {
     let env: V1Envelope<Vec<V1TimeRow>> = serde_json::from_str(raw)
-        .map_err(|e| ProviderError::InvalidResponse(format!("İmsakiyem v1 vakit JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("Imsakiyem v1 times JSON: %1", &[&e.to_string()])))?;
     if !env.success {
         return Err(ProviderError::InvalidResponse(
-            "İmsakiyem v1 success=false".into(),
+            tr("Imsakiyem v1 returned success=false"),
         ));
     }
     let rows = env
         .data
-        .ok_or_else(|| ProviderError::InvalidResponse("İmsakiyem v1 data boş".into()))?;
+        .ok_or_else(|| ProviderError::InvalidResponse(tr("Imsakiyem v1 returned empty data")))?;
 
     let mut out = Vec::with_capacity(rows.len());
     for row in rows {
@@ -425,22 +424,40 @@ pub(crate) fn parse_v1_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTim
     Ok(out)
 }
 
+fn pick_localized_name(
+    tr_name: Option<&str>,
+    en_name: Option<&str>,
+    fallback: &str,
+    prefer_en: bool,
+) -> String {
+    let first = if prefer_en { en_name } else { tr_name };
+    let second = if prefer_en { tr_name } else { en_name };
+    first
+        .filter(|s| !s.is_empty())
+        .or_else(|| second.filter(|s| !s.is_empty()))
+        .unwrap_or(fallback)
+        .to_string()
+}
+
 fn dto_to_candidate(dto: V2DistrictDto) -> LocationCandidate {
-    let district_name = dto
-        .names
-        .as_ref()
-        .and_then(|n| n.tr.clone())
-        .unwrap_or_else(|| dto.name.clone());
+    let prefer_en = active_lang() != AppLang::Tr;
+    let district_name = pick_localized_name(
+        dto.names.as_ref().and_then(|n| n.tr.as_deref()),
+        dto.names.as_ref().and_then(|n| n.en.as_deref()),
+        &dto.name,
+        prefer_en,
+    );
 
     let city_name = dto
         .state
         .as_ref()
         .map(|s| {
-            s.names
-                .as_ref()
-                .and_then(|n| n.tr.clone())
-                .filter(|x| !x.is_empty())
-                .unwrap_or_else(|| s.name.clone())
+            pick_localized_name(
+                s.names.as_ref().and_then(|n| n.tr.as_deref()),
+                s.names.as_ref().and_then(|n| n.en.as_deref()),
+                &s.name,
+                prefer_en,
+            )
         })
         .unwrap_or_else(|| district_name.clone());
 
@@ -448,19 +465,17 @@ fn dto_to_candidate(dto: V2DistrictDto) -> LocationCandidate {
         .country
         .as_ref()
         .map(|c| {
-            let cname = c
-                .names
-                .as_ref()
-                .and_then(|n| n.tr.clone())
-                .filter(|x| !x.is_empty())
-                .unwrap_or_else(|| c.name.clone());
+            let cname = pick_localized_name(
+                c.names.as_ref().and_then(|n| n.tr.as_deref()),
+                c.names.as_ref().and_then(|n| n.en.as_deref()),
+                &c.name,
+                prefer_en,
+            );
             (c.iso2.clone(), cname)
         })
         .unwrap_or_default();
 
-    let display_label = dto
-        .label
-        .unwrap_or_else(|| format!("{district_name}, {city_name}, {country_name}"));
+    let display_label = format!("{district_name}, {city_name}, {country_name}");
 
     let _ = dto.diyanet_name;
 

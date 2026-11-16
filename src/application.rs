@@ -8,6 +8,7 @@ use jiff::Timestamp;
 use tracing::{debug, info, warn};
 
 use crate::config::VERSION;
+use crate::i18n::{tr, tr_fmt};
 use crate::models::{LocationProfile, PrayerName, TrayLabelFormat};
 use crate::services::{
     AppSettings, CachedDays, DataEvent, DiskCache, PrayerController, TrayCommand, shared_runtime,
@@ -100,7 +101,7 @@ impl NamazTimeApplication {
         glib::Object::builder()
             .property("application-id", application_id)
             .property("flags", flags)
-            .property("resource-base-path", "/me/bykemah/namaztime")
+            .property("resource-base-path", "/io/github/bykemalh/namaz_time/NamazTime")
             .build()
     }
 
@@ -236,10 +237,10 @@ impl NamazTimeApplication {
     fn load_css(&self) {
         if let Some(display) = gdk::Display::default() {
             let icon_theme = gtk::IconTheme::for_display(&display);
-            icon_theme.add_resource_path("/me/bykemah/namaztime/icons");
+            icon_theme.add_resource_path("/io/github/bykemalh/namaz_time/NamazTime/icons");
 
             let provider = gtk::CssProvider::new();
-            provider.load_from_resource("/me/bykemah/namaztime/style.css");
+            provider.load_from_resource("/io/github/bykemalh/namaz_time/NamazTime/style.css");
             gtk::style_context_add_provider_for_display(
                 &display,
                 &provider,
@@ -354,7 +355,7 @@ impl NamazTimeApplication {
     fn trigger_manual_refresh(&self) {
         let Some(profile) = self.imp().current_profile.borrow().clone() else {
             if let Some(win) = self.existing_window() {
-                win.show_toast("Önce bir konum seçin");
+                win.show_toast(&tr("Select a location first"));
             }
             return;
         };
@@ -418,7 +419,7 @@ impl NamazTimeApplication {
                             }
                         }
                     } else if was_manual {
-                        win.show_toast("Namaz vakitleri güncellendi");
+                        win.show_toast(&tr("Prayer times updated"));
                     }
                 }
 
@@ -439,8 +440,9 @@ impl NamazTimeApplication {
                 let has_valid_today = self.compute_active_snapshot().is_some();
                 if has_valid_today {
                     *imp.is_stale.borrow_mut() = true;
-                    *imp.stale_reason.borrow_mut() = Some(format!(
-                        "Güncelleme başarısız oldu, önbellek gösteriliyor ({message})"
+                    *imp.stale_reason.borrow_mut() = Some(tr_fmt(
+                        "Update failed; showing cached schedule (%1)",
+                        &[&message],
                     ));
                     *imp.last_error.borrow_mut() = None;
                 } else {
@@ -450,7 +452,7 @@ impl NamazTimeApplication {
                 if let Some(win) = self.existing_window() {
                     win.set_refreshing(false);
                     if was_manual {
-                        win.show_toast(&format!("Yenileme başarısız: {message}"));
+                        win.show_toast(&tr_fmt("Refresh failed: %1", &[&message]));
                     }
                 }
 
@@ -678,7 +680,7 @@ impl NamazTimeApplication {
 
     fn show_shortcuts(&self) {
         let win = self.get_or_create_window();
-        let builder = gtk::Builder::from_resource("/me/bykemah/namaztime/shortcuts-dialog.ui");
+        let builder = gtk::Builder::from_resource("/io/github/bykemalh/namaz_time/NamazTime/shortcuts-dialog.ui");
         if let Some(dialog) = builder.object::<adw::Dialog>("shortcuts_dialog") {
             dialog.present(Some(&win));
         }
@@ -686,26 +688,31 @@ impl NamazTimeApplication {
 
     fn show_about(&self) {
         let win = self.get_or_create_window();
+        let credit_imsakiyem = tr("Imsakiyem API (Diyanet data)");
+        let credit_mtopal = tr("mtopal Prayer Times v1.5 (Diyanet data)");
+        let credit_idamedya = tr("IDA Medya Prayer Times API (Turkey / Diyanet data)");
         let about = adw::AboutDialog::builder()
-            .application_name("Namaz Vakti")
-            .application_icon("me.bykemah.namaztime")
+            .application_name(tr("Prayer Times"))
+            .application_icon("io.github.bykemalh.namaz_time.NamazTime")
             .developer_name("Kemal (@bykemalh)")
             .version(VERSION)
             .website("https://github.com/bykemalh/namaz-time")
             .issue_url("https://github.com/bykemalh/namaz-time/issues")
             .developers(vec!["Kemal https://github.com/bykemalh"])
-            .comments("GNOME ve sistem tepsisi entegrasyonlu, üç aşamalı yedekli Diyanet namaz vakti uygulaması.")
+            .comments(tr(
+                "Native GNOME prayer times application with top-bar countdown, system tray menu, and three-stage Diyanet API fallback.",
+            ))
             .license_type(gtk::License::MitX11)
-            .translator_credits("Kemal")
+            .translator_credits("Kemal (@bykemalh)")
             .copyright("© 2026 Kemal (@bykemalh)")
             .build();
-        about.add_link("GitHub Profili", "https://github.com/bykemalh");
+        about.add_link(&tr("GitHub Profile"), "https://github.com/bykemalh");
         about.add_credit_section(
-            Some("Veri Kaynakları"),
+            Some(&tr("Data Sources")),
             &[
-                "İmsakiyem API (Diyanet verisi)",
-                "mtopal Ezan Vakti v1.5 (Diyanet verisi)",
-                "İDA Medya Namaz Vakti API (Türkiye / Diyanet verisi)",
+                credit_imsakiyem.as_str(),
+                credit_mtopal.as_str(),
+                credit_idamedya.as_str(),
             ],
         );
 

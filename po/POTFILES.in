@@ -1,7 +1,20 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically.
-data/me.bykemah.namaztime.desktop.in
-data/me.bykemah.namaztime.gschema.xml
-data/me.bykemah.namaztime.metainfo.xml.in
+data/io.github.bykemalh.namaz_time.NamazTime.desktop.in
+data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml
+data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in
+src/application.rs
+src/i18n.rs
+src/models/prayer.rs
+src/providers/idamedya.rs
+src/providers/imsakiyem.rs
+src/providers/mod.rs
+src/providers/mtopal.rs
+src/services/portal.rs
+src/services/scheduler.rs
+src/services/tray.rs
 src/shortcuts-dialog.ui
+src/ui/location_dialog.rs
+src/ui/preferences.rs
+src/window.rs
 src/window.ui

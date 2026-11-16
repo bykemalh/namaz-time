@@ -1,4 +1,4 @@
-application_id = 'me.bykemah.namaztime'
+application_id = 'io.github.bykemalh.namaz_time.NamazTime'
 
 scalable_dir = 'hicolor' / 'scalable' / 'apps'
 install_data(

@@ -4,7 +4,7 @@ use tracing::warn;
 
 use crate::models::{LocationProfile, ProviderKind, TrayLabelFormat};
 
-pub const APP_ID: &str = "me.bykemah.namaztime";
+pub const APP_ID: &str = "io.github.bykemalh.namaz_time.NamazTime";
 
 #[derive(Debug, Clone)]
 pub struct AppSettings {
@@ -100,5 +100,13 @@ impl AppSettings {
 
     pub fn set_show_seconds(&self, enabled: bool) {
         let _ = self.inner.set_boolean("show-seconds", enabled);
+    }
+
+    pub fn app_language(&self) -> String {
+        self.inner.string("app-language").to_string()
+    }
+
+    pub fn set_app_language(&self, lang: &str) {
+        let _ = self.inner.set_string("app-language", lang);
     }
 }

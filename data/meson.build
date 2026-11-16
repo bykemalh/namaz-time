@@ -1,6 +1,6 @@
 desktop_file = i18n.merge_file(
-        input: 'me.bykemah.namaztime.desktop.in',
-       output: 'me.bykemah.namaztime.desktop',
+        input: 'io.github.bykemalh.namaz_time.NamazTime.desktop.in',
+       output: 'io.github.bykemalh.namaz_time.NamazTime.desktop',
          type: 'desktop',
        po_dir: '../po',
       install: true,
@@ -13,8 +13,8 @@ if desktop_utils.found()
 endif
 
 appstream_file = i18n.merge_file(
-        input: 'me.bykemah.namaztime.metainfo.xml.in',
-       output: 'me.bykemah.namaztime.metainfo.xml',
+        input: 'io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in',
+       output: 'io.github.bykemalh.namaz_time.NamazTime.metainfo.xml',
        po_dir: '../po',
       install: true,
   install_dir: get_option('datadir') / 'metainfo'
@@ -24,7 +24,7 @@ appstreamcli = find_program('appstreamcli', required: false, disabler: true)
 test('Validate appstream file', appstreamcli,
      args: ['validate', '--no-net', '--explain', appstream_file])
 
-install_data('me.bykemah.namaztime.gschema.xml',
+install_data('io.github.bykemalh.namaz_time.NamazTime.gschema.xml',
   install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
 )
 
@@ -37,8 +37,8 @@ test('Validate schema file',
 service_conf = configuration_data()
 service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
 configure_file(
-  input: 'me.bykemah.namaztime.service.in',
-  output: 'me.bykemah.namaztime.service',
+  input: 'io.github.bykemalh.namaz_time.NamazTime.service.in',
+  output: 'io.github.bykemalh.namaz_time.NamazTime.service',
   configuration: service_conf,
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )

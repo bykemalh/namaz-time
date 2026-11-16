@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.bykemalh.namaz_time.NamazTime</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <name>Prayer Times</name>
+  <summary>Live prayer time countdown</summary>
+  <description>
+    <p>Prayer Times (Namaz Vakti) is a native GTK4 and Libadwaita prayer times application for GNOME. It offers three-stage Diyanet API fallback, smart offline caching, and GNOME system tray integration.</p>
+    <ul>
+      <li>IANA timezone-aware schedules for cities and districts worldwide and across Turkey</li>
+      <li>Live countdown in the GNOME top bar with a quick six-prayer tray menu</li>
+      <li>Verified multi-provider fallback (Imsakiyem, mtopal v1.5, and IDA Medya)</li>
+    </ul>
+  </description>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Live countdown and daily prayer times (English)</caption>
+      <image type="source" width="980" height="1500">https://raw.githubusercontent.com/bykemalh/namaz-time/v0.1.0/data/screenshot/image_en.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Live countdown and daily prayer times (Turkish)</caption>
+      <image type="source" width="980" height="1500">https://raw.githubusercontent.com/bykemalh/namaz-time/v0.1.0/data/screenshot/image.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Preferences dialog for data source, top bar, background mode, and language</caption>
+      <image type="source" width="980" height="1500">https://raw.githubusercontent.com/bykemalh/namaz-time/v0.1.0/data/screenshot/settings_en.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>GNOME top bar tray menu with remaining time and all six prayers</caption>
+      <image type="source" width="333" height="669">https://raw.githubusercontent.com/bykemalh/namaz-time/v0.1.0/data/screenshot/tray.png</image>
+    </screenshot>
+  </screenshots>
+
+  <developer id="io.github.bykemalh">
+    <name>Kemal (@bykemalh)</name>
+  </developer>
+
+  <url type="homepage">https://github.com/bykemalh/namaz-time</url>
+  <url type="bugtracker">https://github.com/bykemalh/namaz-time/issues</url>
+  <url type="vcs-browser">https://github.com/bykemalh/namaz-time</url>
+  <url type="contribute">https://github.com/bykemalh/namaz-time</url>
+  <translation type="gettext">namaz-time</translation>
+  <launchable type="desktop-id">io.github.bykemalh.namaz_time.NamazTime.desktop</launchable>
+  <content_rating type="oars-1.1" />
+
+  <branding>
+    <color type="primary" scheme_preference="light">#1e8e74</color>
+    <color type="primary" scheme_preference="dark">#0f5c4d</color>
+  </branding>
+
+  <releases>
+    <release version="0.1.0" date="2026-11-16">
+      <url type="details">https://github.com/bykemalh/namaz-time/releases/tag/v0.1.0</url>
+      <description translate="no">
+        <p>Initial release of Prayer Times (Namaz Vakti): GNOME Adwaita UI, system tray menu, and three-provider Diyanet schedule backend.</p>
+      </description>
+    </release>
+  </releases>
+</component>

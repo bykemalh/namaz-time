@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="namaz-time">
-  <schema id="me.bykemah.namaztime" path="/me/bykemah/namaztime/">
+  <schema id="io.github.bykemalh.namaz_time.NamazTime" path="/io/github/bykemalh/namaz_time/NamazTime/">
     <key name="location-profile-json" type="s">
       <default>""</default>
       <summary>Selected location profile</summary>
@@ -35,6 +35,11 @@
       <default>true</default>
       <summary>Show seconds in main countdown</summary>
       <description>Display live seconds in the main window countdown timer.</description>
+    </key>
+    <key name="app-language" type="s">
+      <default>"system"</default>
+      <summary>Application language</summary>
+      <description>Display language override: system, tr, en, or ru.</description>
     </key>
   </schema>
 </schemalist>

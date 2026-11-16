@@ -11,6 +11,7 @@ use zbus::names::InterfaceName;
 use zbus::object_server::SignalEmitter;
 use zbus::{Connection, ObjectPath, OwnedVariant, Str, Structure, Type, Variant, fdo};
 
+use crate::i18n::{tr, tr_fmt};
 use crate::models::{
     PrayerName, ScheduleSnapshot, TrayLabelFormat, format_hm_words, format_tray_label,
 };
@@ -48,11 +49,11 @@ pub struct TrayViewState {
 impl Default for TrayViewState {
     fn default() -> Self {
         Self {
-            location_label: "Konum seçilmedi".to_string(),
-            countdown_label: "Başlamak için konum seçin".to_string(),
+            location_label: tr("No location set"),
+            countdown_label: tr("Choose a location to begin"),
             panel_label: String::new(),
-            tooltip_title: "Namaz Vakti".to_string(),
-            tooltip_desc: "Konum seçilmedi".to_string(),
+            tooltip_title: tr("Prayer Times"),
+            tooltip_desc: tr("No location set"),
             prayers: Vec::new(),
         }
     }
@@ -68,26 +69,29 @@ impl TrayViewState {
         let (countdown_label, panel_label, tooltip_desc) = if let Some(ref next) = snap.next_prayer
         {
             let words = format_hm_words(next.remaining_seconds);
-            let tomorrow_tag = if next.is_tomorrow { " (Yarın)" } else { "" };
-            let cd = format!(
-                "{} vaktine {words} ({}{})",
-                next.name.label(),
-                next.time_str,
-                tomorrow_tag
-            );
+            let cd = if next.is_tomorrow {
+                tr_fmt(
+                    "Tomorrow's %1 in %2 (%3)",
+                    &[&next.name.label(), &words, &next.time_str],
+                )
+            } else {
+                tr_fmt(
+                    "%1 in %2 (%3)",
+                    &[&next.name.label(), &words, &next.time_str],
+                )
+            };
             let pl = if show_panel_label {
                 format_tray_label(next, panel_format)
             } else {
                 String::new()
             };
-            let td = format!(
-                "{location_title}\nŞu an: {} • {}",
-                snap.current_prayer.label(),
-                cd
+            let td = tr_fmt(
+                "%1\nNow: %2 • %3",
+                &[location_title, &snap.current_prayer.label(), &cd],
             );
             (cd, pl, td)
         } else {
-            let cd = format!("Şu an: {} vakti", snap.current_prayer.label());
+            let cd = tr_fmt("Now: %1", &[&snap.current_prayer.label()]);
             (cd.clone(), String::new(), format!("{location_title}\n{cd}"))
         };
 
@@ -106,19 +110,20 @@ impl TrayViewState {
             location_label: location_title.to_string(),
             countdown_label,
             panel_label,
-            tooltip_title: format!("Namaz Vakti — {location_title}"),
+            tooltip_title: tr_fmt("Prayer Times — %1", &[location_title]),
             tooltip_desc,
             prayers,
         }
     }
 
     pub fn loading(location_title: &str) -> Self {
+        let loading_msg = tr("Fetching prayer times…");
         Self {
             location_label: location_title.to_string(),
-            countdown_label: "Vakitler yükleniyor…".to_string(),
+            countdown_label: loading_msg.clone(),
             panel_label: String::new(),
-            tooltip_title: format!("Namaz Vakti — {location_title}"),
-            tooltip_desc: "Vakitler yükleniyor…".to_string(),
+            tooltip_title: tr_fmt("Prayer Times — %1", &[location_title]),
+            tooltip_desc: loading_msg,
             prayers: Vec::new(),
         }
     }
@@ -128,7 +133,7 @@ impl TrayViewState {
             location_label: location_title.to_string(),
             countdown_label: message.to_string(),
             panel_label: String::new(),
-            tooltip_title: format!("Namaz Vakti — {location_title}"),
+            tooltip_title: tr_fmt("Prayer Times — %1", &[location_title]),
             tooltip_desc: message.to_string(),
             prayers: Vec::new(),
         }
@@ -276,12 +281,12 @@ impl SniInterface {
 
     #[zbus(property)]
     fn id(&self) -> fdo::Result<String> {
-        Ok("me.bykemah.namaztime".to_string())
+        Ok("io.github.bykemalh.namaz_time.NamazTime".to_string())
     }
 
     #[zbus(property)]
     fn title(&self) -> fdo::Result<String> {
-        Ok("Namaz Vakti".to_string())
+        Ok(tr("Prayer Times"))
     }
 
     #[zbus(property)]
@@ -337,7 +342,7 @@ impl SniInterface {
 
     #[zbus(property, name = "XAyatanaLabelGuide")]
     fn x_ayatana_label_guide(&self) -> fdo::Result<String> {
-        Ok("İkindi 12s 59dk".to_string())
+        Ok(tr("Maghrib 12h 59m"))
     }
 
     #[zbus(signal)]
@@ -560,13 +565,13 @@ fn build_menu_items(view: &TrayViewState) -> Vec<(i32, HashMap<Cow<'static, str>
             "  "
         };
         let suffix = if prayer.is_next {
-            "  (Sıradaki)"
+            tr("  (Next)")
         } else if prayer.is_current {
-            "  (Şu an)"
+            tr("  (Now)")
         } else {
-            ""
+            String::new()
         };
-        let label = format!("{marker}{:<7}  {}{suffix}", prayer.name.label(), prayer.time);
+        let label = format!("{marker}{:<8}  {}{suffix}", prayer.name.label(), prayer.time);
         let mut props = standard_item(&label, true);
         if prayer.is_current {
             props.insert(Cow::Borrowed("toggle-type"), str_prop("radio"));
@@ -579,10 +584,10 @@ fn build_menu_items(view: &TrayViewState) -> Vec<(i32, HashMap<Cow<'static, str>
         items.push((ID_SEP_BOTTOM, separator_item()));
     }
 
-    items.push((ID_SHOW_WINDOW, standard_item("Uygulamayı Göster", true)));
-    items.push((ID_REFRESH, standard_item("Vakitleri Yenile", true)));
-    items.push((ID_PREFS, standard_item("Tercihler", true)));
-    items.push((ID_QUIT, standard_item("Çıkış", true)));
+    items.push((ID_SHOW_WINDOW, standard_item(&tr("Show Window"), true)));
+    items.push((ID_REFRESH, standard_item(&tr("Refresh Times"), true)));
+    items.push((ID_PREFS, standard_item(&tr("Preferences"), true)));
+    items.push((ID_QUIT, standard_item(&tr("Quit"), true)));
 
     items
 }
@@ -672,10 +677,11 @@ async fn run_tray_loop(
 
                 if panel_label != last_panel_label {
                     last_panel_label = panel_label.clone();
+                    let guide = tr("Maghrib 12h 59m");
                     let _ = SniInterface::x_ayatana_new_label(
                         sni_iface.signal_emitter(),
                         &panel_label,
-                        "İkindi 12s 59dk",
+                        &guide,
                     )
                     .await;
                     let _ = emit_sni_properties_changed(&conn, &panel_label).await;

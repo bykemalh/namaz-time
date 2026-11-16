@@ -5,6 +5,7 @@ use std::sync::Arc;
 use adw::prelude::*;
 use gtk::{gio, glib};
 
+use crate::i18n::{AppLang, active_lang, tr};
 use crate::models::{LocationCandidate, LocationProfile, normalize_name};
 use crate::providers::{CountryOption, ProviderCoordinator, StateOption};
 use crate::services::DiskCache;
@@ -17,7 +18,7 @@ pub fn show_location_dialog(
     on_selected: impl Fn(LocationProfile) + 'static,
 ) {
     let dialog = adw::Dialog::builder()
-        .title("Konum Seç")
+        .title(tr("Choose Location"))
         .content_width(430)
         .content_height(580)
         .build();
@@ -43,7 +44,7 @@ pub fn show_location_dialog(
                 return;
             }
             *resolving_flag.borrow_mut() = true;
-            toast_overlay.add_toast(adw::Toast::new("Konum eşleştiriliyor…"));
+            toast_overlay.add_toast(adw::Toast::new(&tr("Resolving location…")));
 
             let (tx, rx) = async_channel::bounded::<LocationProfile>(1);
             let coord = coordinator.clone();
@@ -79,7 +80,7 @@ pub fn show_location_dialog(
     root_box.set_margin_end(14);
 
     let search_entry = gtk::SearchEntry::new();
-    search_entry.set_placeholder_text(Some("İlçe veya şehir ara (ör. Kadıköy, Berlin)…"));
+    search_entry.set_placeholder_text(Some(&tr("Search district or city (e.g. Kadıköy, Berlin)…")));
     root_box.append(&search_entry);
 
     let root_stack = gtk::Stack::new();
@@ -106,11 +107,11 @@ pub fn show_location_dialog(
         .child(&wrap_clamp(&search_list))
         .build();
 
-    let loading_box = centered_spinner("Konumlar yükleniyor…");
+    let loading_box = centered_spinner(&tr("Loading locations…"));
     let empty_search = adw::StatusPage::builder()
         .icon_name("system-search-symbolic")
-        .title("Sonuç Bulunamadı")
-        .description("Farklı bir yazım deneyin veya aşağıdan ülke seçerek ilerleyin.")
+        .title(tr("No Results Found"))
+        .description(tr("Try a different spelling or choose a country below."))
         .build();
 
     root_stack.add_named(&loading_box, Some("loading"));
@@ -121,7 +122,7 @@ pub fn show_location_dialog(
 
     root_toolbar.set_content(Some(&root_box));
     let root_page = adw::NavigationPage::builder()
-        .title("Konum Seç")
+        .title(tr("Choose Location"))
         .child(&root_toolbar)
         .build();
     nav_view.add(&root_page);
@@ -277,16 +278,24 @@ fn populate_countries(
     pick_candidate: Rc<dyn Fn(LocationCandidate)>,
     toast_overlay: adw::ToastOverlay,
 ) {
+    let use_english_names = active_lang() != AppLang::Tr;
     clear_listbox(listbox);
     for country in countries {
-        let subtitle = if !country.name_en.is_empty() && country.name_en != country.name {
+        let primary = if use_english_names && !country.name_en.is_empty() {
+            country.name_en.as_str()
+        } else {
+            country.name.as_str()
+        };
+        let secondary = if primary != country.name && !country.name.is_empty() {
+            country.name.as_str()
+        } else if primary != country.name_en && !country.name_en.is_empty() {
             country.name_en.as_str()
         } else {
             ""
         };
         let row = adw::ActionRow::builder()
-            .title(glib::markup_escape_text(&country.name))
-            .subtitle(glib::markup_escape_text(subtitle))
+            .title(glib::markup_escape_text(primary))
+            .subtitle(glib::markup_escape_text(secondary))
             .activatable(true)
             .build();
         row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
@@ -332,7 +341,7 @@ fn push_states_page(
     content.set_margin_end(14);
 
     let filter_entry = gtk::SearchEntry::new();
-    filter_entry.set_placeholder_text(Some("İl veya bölge filtrele…"));
+    filter_entry.set_placeholder_text(Some(&tr("Filter city or region…")));
     content.append(&filter_entry);
 
     let stack = gtk::Stack::new();
@@ -348,14 +357,19 @@ fn push_states_page(
         .vexpand(true)
         .child(&wrap_clamp(&list))
         .build();
-    let loading = centered_spinner("Şehirler yükleniyor…");
+    let loading = centered_spinner(&tr("Loading cities…"));
     stack.add_named(&loading, Some("loading"));
     stack.add_named(&scroll, Some("list"));
     stack.set_visible_child_name("loading");
 
+    let country_title = if active_lang() != AppLang::Tr && !country.name_en.is_empty() {
+        country.name_en.as_str()
+    } else {
+        country.name.as_str()
+    };
     toolbar.set_content(Some(&content));
     let page = adw::NavigationPage::builder()
-        .title(country.name.as_str())
+        .title(country_title)
         .child(&toolbar)
         .build();
     nav_view.push(&page);
@@ -381,15 +395,24 @@ fn push_states_page(
         let pick_candidate = pick_candidate.clone();
         let toast_overlay = toast_overlay.clone();
 
+        let use_en = active_lang() != AppLang::Tr;
         Rc::new(move |states: &[StateOption], query: &str| {
             clear_listbox(&list);
             let q = normalize_name(query);
             for st in states {
-                if !q.is_empty() && !normalize_name(&st.name).contains(&q) {
+                if !q.is_empty()
+                    && !normalize_name(&st.name).contains(&q)
+                    && !normalize_name(&st.name_en).contains(&q)
+                {
                     continue;
                 }
+                let label = if use_en && !st.name_en.is_empty() {
+                    st.name_en.as_str()
+                } else {
+                    st.name.as_str()
+                };
                 let row = adw::ActionRow::builder()
-                    .title(glib::markup_escape_text(&st.name))
+                    .title(glib::markup_escape_text(label))
                     .activatable(true)
                     .build();
                 row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
@@ -463,7 +486,7 @@ fn push_districts_page(
     content.set_margin_end(14);
 
     let filter_entry = gtk::SearchEntry::new();
-    filter_entry.set_placeholder_text(Some("İlçe filtrele…"));
+    filter_entry.set_placeholder_text(Some(&tr("Filter district…")));
     content.append(&filter_entry);
 
     let stack = gtk::Stack::new();
@@ -479,14 +502,19 @@ fn push_districts_page(
         .vexpand(true)
         .child(&wrap_clamp(&list))
         .build();
-    let loading = centered_spinner("İlçeler yükleniyor…");
+    let loading = centered_spinner(&tr("Loading districts…"));
     stack.add_named(&loading, Some("loading"));
     stack.add_named(&scroll, Some("list"));
     stack.set_visible_child_name("loading");
 
+    let state_title = if active_lang() != AppLang::Tr && !state.name_en.is_empty() {
+        state.name_en.as_str()
+    } else {
+        state.name.as_str()
+    };
     toolbar.set_content(Some(&content));
     let page = adw::NavigationPage::builder()
-        .title(state.name.as_str())
+        .title(state_title)
         .child(&toolbar)
         .build();
     nav_view.push(&page);

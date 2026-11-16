@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
+<interface domain="namaz-time">
   <object class="AdwShortcutsDialog" id="shortcuts_dialog">
     <child>
       <object class="AdwShortcutsSection">
-        <property name="title" translatable="yes">Genel</property>
+        <property name="title" translatable="yes">General</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Konum Seç</property>
+            <property name="title" translatable="yes">Choose Location</property>
             <property name="action-name">app.choose-location</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Vakitleri Yenile</property>
+            <property name="title" translatable="yes">Refresh Times</property>
             <property name="action-name">app.refresh</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Tercihler</property>
+            <property name="title" translatable="yes">Preferences</property>
             <property name="action-name">app.preferences</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Klavye Kısayolları</property>
+            <property name="title" translatable="yes">Keyboard Shortcuts</property>
             <property name="action-name">app.shortcuts</property>
           </object>
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Çıkış</property>
+            <property name="title" translatable="yes">Quit</property>
             <property name="action-name">app.quit</property>
           </object>
         </child>

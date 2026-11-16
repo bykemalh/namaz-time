@@ -12,6 +12,7 @@ use jiff::Timestamp;
 use reqwest::{Client, Response, StatusCode};
 use tracing::{info, warn};
 
+use crate::i18n::{tr, tr_fmt};
 use crate::models::location::{
     expand_name_aliases, fallback_timezone_for_country, match_unique_by_name, normalize_name,
     system_timezone_iana,
@@ -33,14 +34,14 @@ impl fmt::Display for ProviderError {
         match self {
             Self::RateLimited {
                 retry_after_secs: Some(s),
-            } => write!(f, "İstek limiti aşıldı ({s} sn bekleme)"),
+            } => write!(f, "{}", tr_fmt("Rate limit exceeded (wait %1s)", &[&s.to_string()])),
             Self::RateLimited {
                 retry_after_secs: None,
-            } => write!(f, "İstek limiti aşıldı (429)"),
-            Self::NotFound => write!(f, "Konum bulunamadı (404)"),
-            Self::ServerError(code) => write!(f, "Sunucu hatası (HTTP {code})"),
-            Self::Network(msg) => write!(f, "Bağlantı hatası: {msg}"),
-            Self::InvalidResponse(msg) => write!(f, "Geçersiz yanıt: {msg}"),
+            } => write!(f, "{}", tr("Rate limit exceeded (429)")),
+            Self::NotFound => write!(f, "{}", tr("Location not found (404)")),
+            Self::ServerError(code) => write!(f, "{}", tr_fmt("Server error (HTTP %1)", &[&code.to_string()])),
+            Self::Network(msg) => write!(f, "{}", tr_fmt("Connection error: %1", &[msg])),
+            Self::InvalidResponse(msg) => write!(f, "{}", tr_fmt("Invalid response: %1", &[msg])),
         }
     }
 }
@@ -250,7 +251,7 @@ impl ProviderCoordinator {
                 .collect());
         }
 
-        Err("Şehir listesi alınamadı".to_string())
+        Err(tr("Unable to load city list"))
     }
 
     pub async fn list_districts(
@@ -318,7 +319,7 @@ impl ProviderCoordinator {
                 .collect());
         }
 
-        Err("İlçe listesi alınamadı".to_string())
+        Err(tr("Unable to load district list"))
     }
 
     pub async fn search_locations(
@@ -347,20 +348,23 @@ impl ProviderCoordinator {
             let matched: Vec<LocationCandidate> = provinces
                 .into_iter()
                 .filter(|p| normalize_name(&p.ad).contains(&q_norm))
-                .map(|p| LocationCandidate {
-                    country_code: "TR".to_string(),
-                    country_name: "Türkiye".to_string(),
-                    city_name: p.ad.clone(),
-                    district_name: p.ad.clone(),
-                    display_label: format!("{}, Türkiye", p.ad),
-                    timezone: Some("Europe/Istanbul".to_string()),
-                    lat: None,
-                    lon: None,
-                    provider_ids: ProviderIds {
-                        imsakiyem: None,
-                        mtopal: None,
-                        idamedya: Some(p.ilce.to_string()),
-                    },
+                .map(|p| {
+                    let tr_name = tr("Turkey");
+                    LocationCandidate {
+                        country_code: "TR".to_string(),
+                        country_name: tr_name.clone(),
+                        city_name: p.ad.clone(),
+                        district_name: p.ad.clone(),
+                        display_label: format!("{}, {}", p.ad, tr_name),
+                        timezone: Some("Europe/Istanbul".to_string()),
+                        lat: None,
+                        lon: None,
+                        provider_ids: ProviderIds {
+                            imsakiyem: None,
+                            mtopal: None,
+                            idamedya: Some(p.ilce.to_string()),
+                        },
+                    }
                 })
                 .collect();
             if !matched.is_empty() {
@@ -368,7 +372,7 @@ impl ProviderCoordinator {
             }
         }
 
-        Err("Konum araması şu an yapılamadı".to_string())
+        Err(tr("Location search is currently unavailable"))
     }
 
     /// Ensures the LocationProfile has accurate IANA timezone and resolves verified matching
@@ -540,7 +544,7 @@ impl ProviderCoordinator {
         if self.is_cooling_down(ProviderKind::Mtopal) {
             return cache
                 .load_location_list("mtopal_countries", now_unix, true)
-                .ok_or_else(|| "mtopal limit bekliyor".to_string());
+                .ok_or_else(|| tr("mtopal rate limit pending"));
         }
         match mtopal::fetch_countries(&self.client).await {
             Ok(list) => {
@@ -551,7 +555,7 @@ impl ProviderCoordinator {
                 self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
                 cache
                     .load_location_list("mtopal_countries", now_unix, true)
-                    .ok_or_else(|| "mtopal limit aşıldı".to_string())
+                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
             }
             Err(err) => cache
                 .load_location_list("mtopal_countries", now_unix, true)
@@ -572,7 +576,7 @@ impl ProviderCoordinator {
         if self.is_cooling_down(ProviderKind::Mtopal) {
             return cache
                 .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| "mtopal limit bekliyor".to_string());
+                .ok_or_else(|| tr("mtopal rate limit pending"));
         }
         match mtopal::fetch_cities(&self.client, country_id).await {
             Ok(list) => {
@@ -583,7 +587,7 @@ impl ProviderCoordinator {
                 self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
                 cache
                     .load_location_list(&key, now_unix, true)
-                    .ok_or_else(|| "mtopal limit aşıldı".to_string())
+                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
             }
             Err(err) => cache
                 .load_location_list(&key, now_unix, true)
@@ -606,7 +610,7 @@ impl ProviderCoordinator {
         if self.is_cooling_down(ProviderKind::Mtopal) {
             return cache
                 .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| "mtopal limit bekliyor".to_string());
+                .ok_or_else(|| tr("mtopal rate limit pending"));
         }
         match mtopal::fetch_districts(&self.client, city_id).await {
             Ok(list) => {
@@ -617,7 +621,7 @@ impl ProviderCoordinator {
                 self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
                 cache
                     .load_location_list(&key, now_unix, true)
-                    .ok_or_else(|| "mtopal limit aşıldı".to_string())
+                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
             }
             Err(err) => cache
                 .load_location_list(&key, now_unix, true)
@@ -711,7 +715,7 @@ impl ProviderCoordinator {
 
             let Some(id) = id_opt else { continue };
             if self.is_cooling_down(provider) {
-                errors.push(format!("{}: bekleme süresinde", provider.display_name()));
+                errors.push(tr_fmt("%1: cooldown active", &[&provider.display_name()]));
                 continue;
             }
 
@@ -744,14 +748,14 @@ impl ProviderCoordinator {
                     });
                 }
                 Ok(_) => {
-                    errors.push(format!(
-                        "{}: bugünün ({local_today}) vakti yanıtta yok",
-                        provider.display_name()
+                    errors.push(tr_fmt(
+                        "%1: missing today's (%2) prayer schedule",
+                        &[&provider.display_name(), &local_today],
                     ));
                 }
                 Err(ProviderError::RateLimited { retry_after_secs }) => {
                     self.record_rate_limit(provider, retry_after_secs);
-                    errors.push(format!("{}: 429 limit", provider.display_name()));
+                    errors.push(tr_fmt("%1: rate limit (429)", &[&provider.display_name()]));
                 }
                 Err(err) => {
                     errors.push(format!("{}: {err}", provider.display_name()));
@@ -762,9 +766,12 @@ impl ProviderCoordinator {
         // Fallback to cached days only if today's date actually exists in cache.
         if existing.days.contains_key(&local_today) {
             let reason = if errors.is_empty() {
-                "Çevrimdışı önbellek kullanılıyor".to_string()
+                tr("Showing offline cache")
             } else {
-                format!("Güncellenemedi ({}), önbellek gösteriliyor", errors.join("; "))
+                tr_fmt(
+                    "Update failed (%1); showing cached schedule",
+                    &[&errors.join("; ")],
+                )
             };
             return Ok(FetchTimesResult {
                 cached: existing,
@@ -774,9 +781,9 @@ impl ProviderCoordinator {
         }
 
         if errors.is_empty() {
-            Err("Seçili konum için doğrulanmış bir veri sağlayıcısı bulunamadı.".to_string())
+            Err(tr("No verified provider is available for the selected location."))
         } else {
-            Err(format!("Tüm kaynaklar başarısız: {}", errors.join(" | ")))
+            Err(tr_fmt("All sources failed: %1", &[&errors.join(" | ")]))
         }
     }
 }

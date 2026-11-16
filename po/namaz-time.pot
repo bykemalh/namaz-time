@@ -1,0 +1,855 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the namaz-time package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: namaz-time\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 01:37+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.desktop.in:2
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:7
+#: src/application.rs:695 src/services/tray.rs:55 src/services/tray.rs:289
+#: src/window.ui:6
+msgid "Prayer Times"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.desktop.in:3
+msgid "Live prayer time countdown and system tray utility"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.desktop.in:9
+msgid "Prayer;Namaz;Diyanet;Salah;Adhan;GTK;"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:6
+msgid "Selected location profile"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:7
+msgid ""
+"JSON-serialized active location profile including timezone and provider IDs."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:11
+msgid "Preferred prayer time provider"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:12
+msgid "Data source preference: auto, imsakiyem, mtopal, or idamedya."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:16
+msgid "Run in background when window is closed"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:17
+msgid ""
+"Keep the background service and tray icon running after closing the main "
+"window."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:21
+msgid "Start automatically at login"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:22
+msgid "Request background autostart permission via XDG Background Portal."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:26
+msgid "Show remaining time next to tray icon"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:27
+msgid "Display the remaining time text next to the GNOME top-bar tray icon."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:31
+msgid "Tray label format"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:32
+msgid "Format for the panel label: prayer-and-time or time-only."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:36
+msgid "Show seconds in main countdown"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:37
+msgid "Display live seconds in the main window countdown timer."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:41
+#: src/ui/preferences.rs:166
+msgid "Application language"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:42
+msgid "Display language override: system, tr, en, or ru."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:8
+msgid "Live prayer time countdown"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:10
+msgid ""
+"Prayer Times (Namaz Vakti) is a native GTK4 and Libadwaita prayer times "
+"application for GNOME. It offers three-stage Diyanet API fallback, smart "
+"offline caching, and GNOME system tray integration."
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:12
+msgid ""
+"IANA timezone-aware schedules for cities and districts worldwide and across "
+"Turkey"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:13
+msgid "Live countdown in the GNOME top bar with a quick six-prayer tray menu"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:14
+msgid ""
+"Verified multi-provider fallback (Imsakiyem, mtopal v1.5, and IDA Medya)"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:20
+msgid "Live countdown and daily prayer times (English)"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:24
+msgid "Live countdown and daily prayer times (Turkish)"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:28
+msgid ""
+"Preferences dialog for data source, top bar, background mode, and language"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:32
+msgid "GNOME top bar tray menu with remaining time and all six prayers"
+msgstr ""
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:38
+msgid "Kemal (@bykemalh)"
+msgstr ""
+
+#: src/application.rs:358
+msgid "Select a location first"
+msgstr ""
+
+#: src/application.rs:422
+msgid "Prayer times updated"
+msgstr ""
+
+#: src/application.rs:444
+msgid "Update failed; showing cached schedule (%1)"
+msgstr ""
+
+#: src/application.rs:455
+msgid "Refresh failed: %1"
+msgstr ""
+
+#: src/application.rs:691
+msgid "Imsakiyem API (Diyanet data)"
+msgstr ""
+
+#: src/application.rs:692
+msgid "mtopal Prayer Times v1.5 (Diyanet data)"
+msgstr ""
+
+#: src/application.rs:693
+msgid "IDA Medya Prayer Times API (Turkey / Diyanet data)"
+msgstr ""
+
+#: src/application.rs:703
+msgid ""
+"Native GNOME prayer times application with top-bar countdown, system tray "
+"menu, and three-stage Diyanet API fallback."
+msgstr ""
+
+#: src/application.rs:709
+msgid "GitHub Profile"
+msgstr ""
+
+#: src/application.rs:711
+msgid "Data Sources"
+msgstr ""
+
+#: src/i18n.rs:282
+msgid "Muharram"
+msgstr ""
+
+#: src/i18n.rs:283
+msgid "Safar"
+msgstr ""
+
+#: src/i18n.rs:284
+msgid "Rabi' al-Awwal"
+msgstr ""
+
+#: src/i18n.rs:285
+msgid "Rabi' al-Thani"
+msgstr ""
+
+#: src/i18n.rs:286
+msgid "Jumada al-Awwal"
+msgstr ""
+
+#: src/i18n.rs:287
+msgid "Jumada al-Thani"
+msgstr ""
+
+#: src/i18n.rs:288
+msgid "Rajab"
+msgstr ""
+
+#: src/i18n.rs:289
+msgid "Sha'ban"
+msgstr ""
+
+#: src/i18n.rs:290
+msgid "Ramadan"
+msgstr ""
+
+#: src/i18n.rs:291
+msgid "Shawwal"
+msgstr ""
+
+#: src/i18n.rs:292
+msgid "Dhu al-Qi'dah"
+msgstr ""
+
+#: src/i18n.rs:293
+msgid "Dhu al-Hijjah"
+msgstr ""
+
+#: src/models/prayer.rs:32 src/ui/preferences.rs:30 src/ui/preferences.rs:73
+msgid "Imsakiyem"
+msgstr ""
+
+#: src/models/prayer.rs:34 src/ui/preferences.rs:36
+msgid "IDA Medya"
+msgstr ""
+
+#: src/models/prayer.rs:39
+msgid "%1 (Diyanet data)"
+msgstr ""
+
+#: src/models/prayer.rs:81
+msgid "Fajr"
+msgstr ""
+
+#: src/models/prayer.rs:82
+msgid "Sunrise"
+msgstr ""
+
+#: src/models/prayer.rs:83
+msgid "Dhuhr"
+msgstr ""
+
+#: src/models/prayer.rs:84
+msgid "Asr"
+msgstr ""
+
+#: src/models/prayer.rs:85
+msgid "Maghrib"
+msgstr ""
+
+#: src/models/prayer.rs:86
+msgid "Isha"
+msgstr ""
+
+#: src/models/prayer.rs:138 src/models/prayer.rs:152
+msgid "Invalid date: %1"
+msgstr ""
+
+#: src/models/prayer.rs:143
+msgid "Invalid %1 time: %2"
+msgstr ""
+
+#: src/models/prayer.rs:154
+msgid "Invalid %1 time"
+msgstr ""
+
+#: src/models/prayer.rs:158
+msgid "Time zone error: %1"
+msgstr ""
+
+#: src/models/prayer.rs:233
+msgid "Invalid time zone (%1): %2"
+msgstr ""
+
+#: src/models/prayer.rs:241
+msgid "No prayer schedule found for today (%1)"
+msgstr ""
+
+#: src/models/prayer.rs:370
+msgid "Time entered"
+msgstr ""
+
+#: src/models/prayer.rs:373
+msgid "<1 min"
+msgstr ""
+
+#: src/models/prayer.rs:379
+msgid "%1 min"
+msgstr ""
+
+#: src/models/prayer.rs:380
+msgid "%1 hr"
+msgstr ""
+
+#: src/models/prayer.rs:381
+msgid "%1 hr %2 min"
+msgstr ""
+
+#: src/models/prayer.rs:388
+msgid "0m"
+msgstr ""
+
+#: src/models/prayer.rs:390
+msgid "<1m"
+msgstr ""
+
+#: src/models/prayer.rs:396
+msgid "%1m"
+msgstr ""
+
+#: src/models/prayer.rs:397
+msgid "%1h"
+msgstr ""
+
+#: src/models/prayer.rs:398
+msgid "%1h %2m"
+msgstr ""
+
+#: src/providers/idamedya.rs:55
+msgid "IDA Medya provinces JSON: %1"
+msgstr ""
+
+#: src/providers/idamedya.rs:59 src/providers/idamedya.rs:81
+#: src/providers/idamedya.rs:110
+msgid "IDA Medya ok=false"
+msgstr ""
+
+#: src/providers/idamedya.rs:77
+msgid "IDA Medya districts JSON: %1"
+msgstr ""
+
+#: src/providers/idamedya.rs:106
+msgid "IDA Medya times JSON: %1"
+msgstr ""
+
+#: src/providers/idamedya.rs:115
+msgid "IDA Medya returned empty data"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:163
+msgid "Imsakiyem countries JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:166
+msgid "Imsakiyem countries returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:186
+msgid "Imsakiyem cities JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:189
+msgid "Imsakiyem cities returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:220
+msgid "Imsakiyem districts JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:224
+msgid "Imsakiyem districts returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:258
+msgid "Imsakiyem search JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:262
+msgid "Imsakiyem search returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:284
+msgid "Imsakiyem district detail JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:287
+msgid "Imsakiyem district detail returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:351
+msgid "Imsakiyem v2 times JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:354
+msgid "Imsakiyem v2 returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:359
+msgid "Imsakiyem v2 returned empty data"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:387
+msgid "Imsakiyem v1 times JSON: %1"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:390
+msgid "Imsakiyem v1 returned success=false"
+msgstr ""
+
+#: src/providers/imsakiyem.rs:395
+msgid "Imsakiyem v1 returned empty data"
+msgstr ""
+
+#: src/providers/mod.rs:37
+msgid "Rate limit exceeded (wait %1s)"
+msgstr ""
+
+#: src/providers/mod.rs:40
+msgid "Rate limit exceeded (429)"
+msgstr ""
+
+#: src/providers/mod.rs:41
+msgid "Location not found (404)"
+msgstr ""
+
+#: src/providers/mod.rs:42
+msgid "Server error (HTTP %1)"
+msgstr ""
+
+#: src/providers/mod.rs:43
+msgid "Connection error: %1"
+msgstr ""
+
+#: src/providers/mod.rs:44
+msgid "Invalid response: %1"
+msgstr ""
+
+#: src/providers/mod.rs:254
+msgid "Unable to load city list"
+msgstr ""
+
+#: src/providers/mod.rs:322
+msgid "Unable to load district list"
+msgstr ""
+
+#: src/providers/mod.rs:352
+msgid "Turkey"
+msgstr ""
+
+#: src/providers/mod.rs:375
+msgid "Location search is currently unavailable"
+msgstr ""
+
+#: src/providers/mod.rs:547 src/providers/mod.rs:579 src/providers/mod.rs:613
+msgid "mtopal rate limit pending"
+msgstr ""
+
+#: src/providers/mod.rs:558 src/providers/mod.rs:590 src/providers/mod.rs:624
+msgid "mtopal rate limit exceeded"
+msgstr ""
+
+#: src/providers/mod.rs:718
+msgid "%1: cooldown active"
+msgstr ""
+
+#: src/providers/mod.rs:752
+msgid "%1: missing today's (%2) prayer schedule"
+msgstr ""
+
+#: src/providers/mod.rs:758
+msgid "%1: rate limit (429)"
+msgstr ""
+
+#: src/providers/mod.rs:769 src/window.rs:248
+msgid "Showing offline cache"
+msgstr ""
+
+#: src/providers/mod.rs:772
+msgid "Update failed (%1); showing cached schedule"
+msgstr ""
+
+#: src/providers/mod.rs:784
+msgid "No verified provider is available for the selected location."
+msgstr ""
+
+#: src/providers/mod.rs:786
+msgid "All sources failed: %1"
+msgstr ""
+
+#: src/providers/mtopal.rs:65
+msgid "mtopal countries JSON: %1"
+msgstr ""
+
+#: src/providers/mtopal.rs:79
+msgid "mtopal cities JSON: %1"
+msgstr ""
+
+#: src/providers/mtopal.rs:93
+msgid "mtopal districts JSON: %1"
+msgstr ""
+
+#: src/providers/mtopal.rs:115
+msgid "mtopal times JSON: %1"
+msgstr ""
+
+#: src/providers/mtopal.rs:121
+msgid "mtopal invalid date format: %1"
+msgstr ""
+
+#: src/services/portal.rs:29
+msgid "Background portal request failed: %1"
+msgstr ""
+
+#: src/services/portal.rs:31
+msgid "Background portal response failed: %1"
+msgstr ""
+
+#: src/services/scheduler.rs:147
+msgid "%1 • Tomorrow's %2 in %3"
+msgstr ""
+
+#: src/services/scheduler.rs:151
+msgid "%1 • %2 in %3"
+msgstr ""
+
+#: src/services/tray.rs:52 src/services/tray.rs:56
+msgid "No location set"
+msgstr ""
+
+#: src/services/tray.rs:53
+msgid "Choose a location to begin"
+msgstr ""
+
+#: src/services/tray.rs:74
+msgid "Tomorrow's %1 in %2 (%3)"
+msgstr ""
+
+#: src/services/tray.rs:79
+msgid "%1 in %2 (%3)"
+msgstr ""
+
+#: src/services/tray.rs:89
+msgid ""
+"%1\n"
+"Now: %2 • %3"
+msgstr ""
+
+#: src/services/tray.rs:94 src/window.rs:267
+msgid "Now: %1"
+msgstr ""
+
+#: src/services/tray.rs:113 src/services/tray.rs:125 src/services/tray.rs:136
+msgid "Prayer Times — %1"
+msgstr ""
+
+#: src/services/tray.rs:120 src/window.ui:126
+msgid "Fetching prayer times…"
+msgstr ""
+
+#: src/services/tray.rs:345
+msgid "Maghrib 12h 59m"
+msgstr ""
+
+#: src/services/tray.rs:568
+msgid "  (Next)"
+msgstr ""
+
+#: src/services/tray.rs:570
+msgid "  (Now)"
+msgstr ""
+
+#: src/services/tray.rs:587
+msgid "Show Window"
+msgstr ""
+
+#: src/services/tray.rs:588 src/shortcuts-dialog.ui:15
+msgid "Refresh Times"
+msgstr ""
+
+#: src/services/tray.rs:589 src/shortcuts-dialog.ui:21 src/ui/preferences.rs:16
+msgid "Preferences"
+msgstr ""
+
+#: src/services/tray.rs:590 src/shortcuts-dialog.ui:33
+msgid "Quit"
+msgstr ""
+
+#: src/shortcuts-dialog.ui:6
+msgid "General"
+msgstr ""
+
+#: src/shortcuts-dialog.ui:9 src/ui/location_dialog.rs:21
+#: src/ui/location_dialog.rs:125 src/window.rs:182 src/window.ui:32
+#: src/window.ui:96
+msgid "Choose Location"
+msgstr ""
+
+#: src/shortcuts-dialog.ui:27
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: src/ui/location_dialog.rs:47
+msgid "Resolving location…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:83
+msgid "Search district or city (e.g. Kadıköy, Berlin)…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:110
+msgid "Loading locations…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:113
+msgid "No Results Found"
+msgstr ""
+
+#: src/ui/location_dialog.rs:114
+msgid "Try a different spelling or choose a country below."
+msgstr ""
+
+#: src/ui/location_dialog.rs:344
+msgid "Filter city or region…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:360
+msgid "Loading cities…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:489
+msgid "Filter district…"
+msgstr ""
+
+#: src/ui/location_dialog.rs:505
+msgid "Loading districts…"
+msgstr ""
+
+#: src/ui/preferences.rs:23
+msgid "Location and Data Source"
+msgstr ""
+
+#: src/ui/preferences.rs:39
+msgid "None"
+msgstr ""
+
+#: src/ui/preferences.rs:45
+msgid "Time zone: %1 • Providers: %2"
+msgstr ""
+
+#: src/ui/preferences.rs:49
+msgid "No location selected"
+msgstr ""
+
+#: src/ui/preferences.rs:50
+msgid "Please choose a city or district"
+msgstr ""
+
+#: src/ui/preferences.rs:59
+msgid "Change"
+msgstr ""
+
+#: src/ui/preferences.rs:72
+msgid "Automatic (Recommended)"
+msgstr ""
+
+#: src/ui/preferences.rs:74
+msgid "IDA Medya (Turkey Only)"
+msgstr ""
+
+#: src/ui/preferences.rs:82
+msgid "Preferred data source"
+msgstr ""
+
+#: src/ui/preferences.rs:83
+msgid "Falls back to verified secondary providers if the primary source fails"
+msgstr ""
+
+#: src/ui/preferences.rs:99
+msgid "GNOME Top Bar & Countdown"
+msgstr ""
+
+#: src/ui/preferences.rs:103
+msgid "Show remaining time in top bar"
+msgstr ""
+
+#: src/ui/preferences.rs:104
+msgid "Display remaining time beside the tray icon in the GNOME top panel"
+msgstr ""
+
+#: src/ui/preferences.rs:108
+msgid "Prayer + Time (e.g. Asr 42m)"
+msgstr ""
+
+#: src/ui/preferences.rs:109
+msgid "Time Only (e.g. 42m)"
+msgstr ""
+
+#: src/ui/preferences.rs:112
+msgid "Panel label format"
+msgstr ""
+
+#: src/ui/preferences.rs:122
+msgid "Show seconds in main window"
+msgstr ""
+
+#: src/ui/preferences.rs:123
+msgid "Display the countdown in HH:MM:SS or HH:MM format"
+msgstr ""
+
+#: src/ui/preferences.rs:134
+msgid "Background Behavior"
+msgstr ""
+
+#: src/ui/preferences.rs:138
+msgid "Keep running in background on close"
+msgstr ""
+
+#: src/ui/preferences.rs:139
+msgid "Keep the tray icon and countdown active when the window is hidden"
+msgstr ""
+
+#: src/ui/preferences.rs:144
+msgid "Start automatically on login"
+msgstr ""
+
+#: src/ui/preferences.rs:145
+msgid ""
+"Launch in the background at login using the Flatpak XDG Background Portal"
+msgstr ""
+
+#: src/ui/preferences.rs:155
+msgid "Language"
+msgstr ""
+
+#: src/ui/preferences.rs:158
+msgid "System Default"
+msgstr ""
+
+#: src/ui/preferences.rs:167
+msgid "Restart required to apply language changes"
+msgstr ""
+
+#: src/ui/preferences.rs:295
+msgid "Restart the app to apply the language change"
+msgstr ""
+
+#: src/ui/preferences.rs:296
+msgid "Restart"
+msgstr ""
+
+#: src/window.rs:272
+msgid "Time until tomorrow's %1 (%2)"
+msgstr ""
+
+#: src/window.rs:277
+msgid "Time until %1 (%2)"
+msgstr ""
+
+#: src/window.rs:300
+msgid "Waiting for tomorrow's Fajr time"
+msgstr ""
+
+#: src/window.rs:303
+msgid "Countdown resumes once tomorrow's schedule is refreshed"
+msgstr ""
+
+#: src/window.rs:308
+msgid "Time zone: %1"
+msgstr ""
+
+#: src/window.rs:327
+msgid "Now"
+msgstr ""
+
+#: src/window.rs:332
+msgid "Next"
+msgstr ""
+
+#: src/window.rs:343
+msgid "Source: %1"
+msgstr ""
+
+#: src/window.ui:17
+msgid "Change location"
+msgstr ""
+
+#: src/window.ui:53
+msgid "Main Menu"
+msgstr ""
+
+#: src/window.ui:60
+msgid "Refresh prayer times"
+msgstr ""
+
+#: src/window.ui:78
+msgid ""
+"The AppIndicator extension is not enabled for the GNOME top-bar tray icon."
+msgstr ""
+
+#: src/window.ui:79
+msgid "Dismiss"
+msgstr ""
+
+#: src/window.ui:92
+msgid "Choose Your Location"
+msgstr ""
+
+#: src/window.ui:93
+msgid ""
+"Select a city or district to view prayer times, live countdown, and system "
+"tray status."
+msgstr ""
+
+#: src/window.ui:142
+msgid "Unable to Load Prayer Times"
+msgstr ""
+
+#: src/window.ui:143
+msgid "Check your internet connection and try again."
+msgstr ""
+
+#: src/window.ui:150
+msgid "Retry"
+msgstr ""
+
+#: src/window.ui:159
+msgid "Change Location"
+msgstr ""
+
+#: src/window.ui:320
+msgid "_Preferences"
+msgstr ""
+
+#: src/window.ui:324
+msgid "_Keyboard Shortcuts"
+msgstr ""
+
+#: src/window.ui:328
+msgid "_About Prayer Times"
+msgstr ""
+
+#: src/window.ui:334
+msgid "_Quit"
+msgstr ""

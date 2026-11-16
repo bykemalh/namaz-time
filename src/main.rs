@@ -1,5 +1,6 @@
 mod application;
 mod config;
+mod i18n;
 mod models;
 mod providers;
 mod services;
@@ -7,8 +8,7 @@ mod ui;
 mod window;
 
 use self::application::NamazTimeApplication;
-use config::{GETTEXT_PACKAGE, LOCALEDIR, PKGDATADIR};
-use gettextrs::{bind_textdomain_codeset, bindtextdomain, textdomain};
+use config::PKGDATADIR;
 use gtk::prelude::*;
 use gtk::{gio, glib};
 use tracing_subscriber::EnvFilter;
@@ -21,10 +21,7 @@ fn main() -> glib::ExitCode {
         .with_target(false)
         .try_init();
 
-    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
-    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8")
-        .expect("Unable to set the text domain encoding");
-    textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
+    i18n::init();
 
     let installed_res = format!("{PKGDATADIR}/namaz-time.gresource");
     let resources = gio::Resource::load(&installed_res)
@@ -32,6 +29,17 @@ fn main() -> glib::ExitCode {
         .expect("Could not load namaz-time.gresource");
     gio::resources_register(&resources);
 
-    let app = NamazTimeApplication::new("me.bykemah.namaztime", &gio::ApplicationFlags::empty());
-    app.run()
+    let app = NamazTimeApplication::new("io.github.bykemalh.namaz_time.NamazTime", &gio::ApplicationFlags::empty());
+    let exit_code = app.run();
+    drop(app);
+
+    if i18n::take_restart_requested() {
+        if let Ok(exe) = std::env::current_exe() {
+            use std::os::unix::process::CommandExt;
+            let err = std::process::Command::new(exe).exec();
+            tracing::error!("Failed to restart application: {err}");
+        }
+    }
+
+    exit_code
 }

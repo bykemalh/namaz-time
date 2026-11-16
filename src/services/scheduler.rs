@@ -3,6 +3,7 @@ use std::sync::{Arc, OnceLock};
 use jiff::Timestamp;
 use tracing::{debug, info};
 
+use crate::i18n::tr_fmt;
 use crate::models::{LocationProfile, ProviderKind, ScheduleSnapshot, compute_snapshot, format_hm_words};
 use crate::providers::{FetchTimesResult, ProviderCoordinator};
 use crate::services::cache::{CachedDays, DiskCache};
@@ -140,11 +141,15 @@ impl PrayerController {
                 let view = TrayViewState::from_snapshot(&title, snap, show_panel_label, panel_format);
 
                 if let Some(ref next) = snap.next_prayer {
-                    let status = format!(
-                        "{title} • {} vaktine {}",
-                        next.name.label(),
-                        format_hm_words(next.remaining_seconds)
-                    );
+                    let words = format_hm_words(next.remaining_seconds);
+                    let status = if next.is_tomorrow {
+                        tr_fmt(
+                            "%1 • Tomorrow's %2 in %3",
+                            &[&title, &next.name.label(), &words],
+                        )
+                    } else {
+                        tr_fmt("%1 • %2 in %3", &[&title, &next.name.label(), &words])
+                    };
                     self.rt.spawn(async move {
                         portal::set_background_status(&status).await;
                     });

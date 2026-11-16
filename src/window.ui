@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<interface>
+<interface domain="namaz-time">
   <requires lib="gtk" version="4.0"/>
   <requires lib="Adw" version="1.0"/>
   <template class="NamazTimeWindow" parent="AdwApplicationWindow">
-    <property name="title" translatable="yes">Namaz Vakti</property>
+    <property name="title" translatable="yes">Prayer Times</property>
     <property name="default-width">440</property>
     <property name="default-height">700</property>
     <property name="width-request">340</property>
@@ -14,7 +14,7 @@
           <object class="AdwHeaderBar">
             <child type="start">
               <object class="GtkButton" id="location_button">
-                <property name="tooltip-text" translatable="yes">Konumu değiştir</property>
+                <property name="tooltip-text" translatable="yes">Change location</property>
                 <style>
                   <class name="flat"/>
                   <class name="location-chip"/>
@@ -29,7 +29,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="location_button_label">
-                        <property name="label" translatable="yes">Konum Seç</property>
+                        <property name="label" translatable="yes">Choose Location</property>
                         <property name="ellipsize">end</property>
                         <property name="max-width-chars">22</property>
                         <style>
@@ -50,14 +50,14 @@
               <object class="GtkMenuButton">
                 <property name="primary">True</property>
                 <property name="icon-name">open-menu-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Ana Menü</property>
+                <property name="tooltip-text" translatable="yes">Main Menu</property>
                 <property name="menu-model">primary_menu</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="refresh_button">
                 <property name="icon-name">view-refresh-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Vakitleri yenile</property>
+                <property name="tooltip-text" translatable="yes">Refresh prayer times</property>
               </object>
             </child>
           </object>
@@ -75,8 +75,8 @@
                 <child>
                   <object class="AdwBanner" id="tray_warning_banner">
                     <property name="revealed">False</property>
-                    <property name="title" translatable="yes">GNOME üst panelinde tepsi ikonu için AppIndicator eklentisi etkin değil.</property>
-                    <property name="button-label" translatable="yes">Kapat</property>
+                    <property name="title" translatable="yes">The AppIndicator extension is not enabled for the GNOME top-bar tray icon.</property>
+                    <property name="button-label" translatable="yes">Dismiss</property>
                   </object>
                 </child>
                 <child>
@@ -89,11 +89,11 @@
                         <property name="child">
                           <object class="AdwStatusPage" id="empty_page">
                             <property name="icon-name">namaz-location-symbolic</property>
-                            <property name="title" translatable="yes">Konum Seçin</property>
-                            <property name="description" translatable="yes">Namaz vakitlerini, canlı geri sayımı ve sistem tepsisi bilgisini görmek için şehir veya ilçe seçin.</property>
+                            <property name="title" translatable="yes">Choose Your Location</property>
+                            <property name="description" translatable="yes">Select a city or district to view prayer times, live countdown, and system tray status.</property>
                             <property name="child">
                               <object class="GtkButton" id="empty_select_button">
-                                <property name="label" translatable="yes">Konum Seç</property>
+                                <property name="label" translatable="yes">Choose Location</property>
                                 <property name="halign">center</property>
                                 <style>
                                   <class name="suggested-action"/>
@@ -123,7 +123,7 @@
                             </child>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label" translatable="yes">Namaz vakitleri alınıyor…</property>
+                                <property name="label" translatable="yes">Fetching prayer times…</property>
                                 <style>
                                   <class name="title-4"/>
                                 </style>
@@ -139,15 +139,15 @@
                         <property name="child">
                           <object class="AdwStatusPage" id="error_page">
                             <property name="icon-name">namaz-error-symbolic</property>
-                            <property name="title" translatable="yes">Vakitler Alınamadı</property>
-                            <property name="description" translatable="yes">İnternet bağlantınızı kontrol edip tekrar deneyin.</property>
+                            <property name="title" translatable="yes">Unable to Load Prayer Times</property>
+                            <property name="description" translatable="yes">Check your internet connection and try again.</property>
                             <property name="child">
                               <object class="GtkBox">
                                 <property name="spacing">12</property>
                                 <property name="halign">center</property>
                                 <child>
                                   <object class="GtkButton" id="error_retry_button">
-                                    <property name="label" translatable="yes">Tekrar Dene</property>
+                                    <property name="label" translatable="yes">Retry</property>
                                     <style>
                                       <class name="suggested-action"/>
                                       <class name="pill"/>
@@ -156,7 +156,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="error_location_button">
-                                    <property name="label" translatable="yes">Konum Değiştir</property>
+                                    <property name="label" translatable="yes">Change Location</property>
                                     <style>
                                       <class name="pill"/>
                                     </style>
@@ -317,21 +317,21 @@
   <menu id="primary_menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Tercihler</attribute>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
         <attribute name="action">app.preferences</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Klavye Kısayolları</attribute>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
         <attribute name="action">app.shortcuts</attribute>
       </item>
       <item>
-        <attribute name="label" translatable="yes">_Namaz Vakti Hakkında</attribute>
+        <attribute name="label" translatable="yes">_About Prayer Times</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Çıkış</attribute>
+        <attribute name="label" translatable="yes">_Quit</attribute>
         <attribute name="action">app.quit</attribute>
       </item>
     </section>

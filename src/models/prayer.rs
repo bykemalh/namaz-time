@@ -6,6 +6,8 @@ use jiff::tz::TimeZone;
 use jiff::Timestamp;
 use serde::{Deserialize, Serialize};
 
+use crate::i18n::{active_lang, tr, tr_fmt, AppLang};
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ProviderKind {
@@ -25,16 +27,16 @@ impl ProviderKind {
         }
     }
 
-    pub fn display_name(self) -> &'static str {
+    pub fn display_name(self) -> String {
         match self {
-            Self::Imsakiyem => "İmsakiyem",
-            Self::Mtopal => "mtopal v1.5",
-            Self::Idamedya => "İDA Medya",
+            Self::Imsakiyem => tr("Imsakiyem"),
+            Self::Mtopal => "mtopal v1.5".to_string(),
+            Self::Idamedya => tr("IDA Medya"),
         }
     }
 
     pub fn attribution_text(self) -> String {
-        format!("{} (Diyanet verisi)", self.display_name())
+        tr_fmt("%1 (Diyanet data)", &[&self.display_name()])
     }
 
     pub fn from_id(s: &str) -> Option<Self> {
@@ -49,7 +51,7 @@ impl ProviderKind {
 
 impl fmt::Display for ProviderKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.display_name())
+        f.write_str(&self.display_name())
     }
 }
 
@@ -74,14 +76,14 @@ impl PrayerName {
         Self::Yatsi,
     ];
 
-    pub fn label(self) -> &'static str {
+    pub fn label(self) -> String {
         match self {
-            Self::Imsak => "İmsak",
-            Self::Gunes => "Güneş",
-            Self::Ogle => "Öğle",
-            Self::Ikindi => "İkindi",
-            Self::Aksam => "Akşam",
-            Self::Yatsi => "Yatsı",
+            Self::Imsak => tr("Fajr"),
+            Self::Gunes => tr("Sunrise"),
+            Self::Ogle => tr("Dhuhr"),
+            Self::Ikindi => tr("Asr"),
+            Self::Aksam => tr("Maghrib"),
+            Self::Yatsi => tr("Isha"),
         }
     }
 
@@ -99,7 +101,7 @@ impl PrayerName {
 
 impl fmt::Display for PrayerName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.label())
+        f.write_str(&self.label())
     }
 }
 
@@ -133,11 +135,12 @@ impl DayTimes {
         let _: Date = self
             .date
             .parse()
-            .map_err(|_| format!("Geçersiz tarih: {}", self.date))?;
+            .map_err(|_| tr_fmt("Invalid date: %1", &[&self.date]))?;
 
         for prayer in PrayerName::ALL {
             let val = self.time_for(prayer);
-            parse_hhmm(val).ok_or_else(|| format!("Geçersiz {} vakti: {}", prayer.label(), val))?;
+            parse_hhmm(val)
+                .ok_or_else(|| tr_fmt("Invalid %1 time: %2", &[&prayer.label(), val]))?;
         }
         Ok(())
     }
@@ -146,13 +149,13 @@ impl DayTimes {
         let date: Date = self
             .date
             .parse()
-            .map_err(|_| format!("Geçersiz tarih: {}", self.date))?;
+            .map_err(|_| tr_fmt("Invalid date: %1", &[&self.date]))?;
         let (hour, minute) = parse_hhmm(self.time_for(prayer))
-            .ok_or_else(|| format!("Geçersiz {} vakti", prayer.label()))?;
+            .ok_or_else(|| tr_fmt("Invalid %1 time", &[&prayer.label()]))?;
         let zoned = date
             .at(hour as i8, minute as i8, 0, 0)
             .to_zoned(tz.clone())
-            .map_err(|e| format!("Saat dilimi hatası: {e}"))?;
+            .map_err(|e| tr_fmt("Time zone error: %1", &[&e.to_string()]))?;
         Ok(zoned.timestamp())
     }
 }
@@ -227,7 +230,7 @@ pub fn compute_snapshot(
     stale_reason: Option<String>,
 ) -> Result<ScheduleSnapshot, String> {
     let tz = TimeZone::get(timezone_iana)
-        .map_err(|e| format!("Geçersiz saat dilimi ({timezone_iana}): {e}"))?;
+        .map_err(|e| tr_fmt("Invalid time zone (%1): %2", &[timezone_iana, &e.to_string()]))?;
     let zoned_now = now.to_zoned(tz.clone());
     let today_date = zoned_now.date();
     let today_key = today_date.to_string();
@@ -235,7 +238,7 @@ pub fn compute_snapshot(
     let today = days
         .get(&today_key)
         .cloned()
-        .ok_or_else(|| format!("Bugünün ({today_key}) namaz vakti verisi bulunamadı"))?;
+        .ok_or_else(|| tr_fmt("No prayer schedule found for today (%1)", &[&today_key]))?;
 
     let yesterday_key = today_date
         .yesterday()
@@ -330,7 +333,7 @@ pub fn compute_snapshot(
         tomorrow,
         current_prayer,
         next_prayer,
-        local_date_str: format_turkish_date(today_date),
+        local_date_str: format_localized_date(today_date),
         timezone: timezone_iana.to_string(),
         stale,
         stale_reason,
@@ -364,35 +367,35 @@ pub fn format_hm(remaining_seconds: i64) -> String {
 pub fn format_hm_words(remaining_seconds: i64) -> String {
     let secs = remaining_seconds.max(0);
     if secs == 0 {
-        return "Vakit girdi".to_string();
+        return tr("Time entered");
     }
     if secs < 60 {
-        return "<1 dk".to_string();
+        return tr("<1 min");
     }
     let total_minutes = secs / 60;
     let hours = total_minutes / 60;
     let minutes = total_minutes % 60;
     match (hours, minutes) {
-        (0, m) => format!("{m} dk"),
-        (h, 0) => format!("{h} sa"),
-        (h, m) => format!("{h} sa {m} dk"),
+        (0, m) => tr_fmt("%1 min", &[&m.to_string()]),
+        (h, 0) => tr_fmt("%1 hr", &[&h.to_string()]),
+        (h, m) => tr_fmt("%1 hr %2 min", &[&h.to_string(), &m.to_string()]),
     }
 }
 
 pub fn format_tray_label(next: &NextPrayerInfo, mode: TrayLabelFormat) -> String {
     let secs = next.remaining_seconds.max(0);
     let duration_part = if secs == 0 {
-        "0dk".to_string()
+        tr("0m")
     } else if secs < 60 {
-        "<1dk".to_string()
+        tr("<1m")
     } else {
         let total_minutes = secs / 60;
         let hours = total_minutes / 60;
         let minutes = total_minutes % 60;
         match (hours, minutes) {
-            (0, m) => format!("{m}dk"),
-            (h, 0) => format!("{h}s"),
-            (h, m) => format!("{h}s {m:02}dk"),
+            (0, m) => tr_fmt("%1m", &[&m.to_string()]),
+            (h, 0) => tr_fmt("%1h", &[&h.to_string()]),
+            (h, m) => tr_fmt("%1h %2m", &[&h.to_string(), &format!("{m:02}")]),
         }
     };
 
@@ -402,32 +405,94 @@ pub fn format_tray_label(next: &NextPrayerInfo, mode: TrayLabelFormat) -> String
     }
 }
 
-pub fn format_turkish_date(date: Date) -> String {
-    let month_name = match date.month() {
-        1 => "Ocak",
-        2 => "Şubat",
-        3 => "Mart",
-        4 => "Nisan",
-        5 => "Mayıs",
-        6 => "Haziran",
-        7 => "Temmuz",
-        8 => "Ağustos",
-        9 => "Eylül",
-        10 => "Ekim",
-        11 => "Kasım",
-        12 => "Aralık",
-        _ => "",
-    };
-    let weekday_name = match date.weekday() {
-        Weekday::Monday => "Pazartesi",
-        Weekday::Tuesday => "Salı",
-        Weekday::Wednesday => "Çarşamba",
-        Weekday::Thursday => "Perşembe",
-        Weekday::Friday => "Cuma",
-        Weekday::Saturday => "Cumartesi",
-        Weekday::Sunday => "Pazar",
-    };
-    format!("{} {} {}, {}", date.day(), month_name, date.year(), weekday_name)
+pub fn format_localized_date(date: Date) -> String {
+    format_localized_date_for(date, active_lang())
+}
+
+pub fn format_localized_date_for(date: Date, lang: AppLang) -> String {
+    match lang {
+        AppLang::Tr => {
+            let month_name = match date.month() {
+                1 => "Ocak",
+                2 => "Şubat",
+                3 => "Mart",
+                4 => "Nisan",
+                5 => "Mayıs",
+                6 => "Haziran",
+                7 => "Temmuz",
+                8 => "Ağustos",
+                9 => "Eylül",
+                10 => "Ekim",
+                11 => "Kasım",
+                12 => "Aralık",
+                _ => "",
+            };
+            let weekday_name = match date.weekday() {
+                Weekday::Monday => "Pazartesi",
+                Weekday::Tuesday => "Salı",
+                Weekday::Wednesday => "Çarşamba",
+                Weekday::Thursday => "Perşembe",
+                Weekday::Friday => "Cuma",
+                Weekday::Saturday => "Cumartesi",
+                Weekday::Sunday => "Pazar",
+            };
+            format!("{} {} {}, {}", date.day(), month_name, date.year(), weekday_name)
+        }
+        AppLang::Ru => {
+            let month_name = match date.month() {
+                1 => "января",
+                2 => "февраля",
+                3 => "марта",
+                4 => "апреля",
+                5 => "мая",
+                6 => "июня",
+                7 => "июля",
+                8 => "августа",
+                9 => "сентября",
+                10 => "октября",
+                11 => "ноября",
+                12 => "декабря",
+                _ => "",
+            };
+            let weekday_name = match date.weekday() {
+                Weekday::Monday => "понедельник",
+                Weekday::Tuesday => "вторник",
+                Weekday::Wednesday => "среда",
+                Weekday::Thursday => "четверг",
+                Weekday::Friday => "пятница",
+                Weekday::Saturday => "суббота",
+                Weekday::Sunday => "воскресенье",
+            };
+            format!("{} {} {}, {}", date.day(), month_name, date.year(), weekday_name)
+        }
+        AppLang::En => {
+            let month_name = match date.month() {
+                1 => "January",
+                2 => "February",
+                3 => "March",
+                4 => "April",
+                5 => "May",
+                6 => "June",
+                7 => "July",
+                8 => "August",
+                9 => "September",
+                10 => "October",
+                11 => "November",
+                12 => "December",
+                _ => "",
+            };
+            let weekday_name = match date.weekday() {
+                Weekday::Monday => "Monday",
+                Weekday::Tuesday => "Tuesday",
+                Weekday::Wednesday => "Wednesday",
+                Weekday::Thursday => "Thursday",
+                Weekday::Friday => "Friday",
+                Weekday::Saturday => "Saturday",
+                Weekday::Sunday => "Sunday",
+            };
+            format!("{}, {} {}, {}", weekday_name, month_name, date.day(), date.year())
+        }
+    }
 }
 
 #[cfg(test)]
@@ -487,8 +552,8 @@ mod tests {
         assert_eq!(next.time_str, "15:29");
         assert_eq!(next.remaining_seconds, 42 * 60);
         assert!(!next.is_tomorrow);
-        assert_eq!(format_tray_label(&next, TrayLabelFormat::PrayerAndTime), "İkindi 42dk");
-        assert_eq!(format_tray_label(&next, TrayLabelFormat::TimeOnly), "42dk");
+        assert_eq!(format_tray_label(&next, TrayLabelFormat::PrayerAndTime), "Asr 42m");
+        assert_eq!(format_tray_label(&next, TrayLabelFormat::TimeOnly), "42m");
     }
 
     #[test]
@@ -544,5 +609,22 @@ mod tests {
         let next = snap.next_prayer.unwrap();
         assert_eq!(next.name, PrayerName::Imsak);
         assert_eq!(next.remaining_seconds, (5 * 60 + 10) * 60);
+    }
+
+    #[test]
+    fn formats_dates_in_all_three_languages() {
+        let d = Date::new(2026, 11, 15).unwrap();
+        assert_eq!(
+            format_localized_date_for(d, AppLang::En),
+            "Sunday, November 15, 2026"
+        );
+        assert_eq!(
+            format_localized_date_for(d, AppLang::Tr),
+            "15 Kasım 2026, Pazar"
+        );
+        assert_eq!(
+            format_localized_date_for(d, AppLang::Ru),
+            "15 ноября 2026, воскресенье"
+        );
     }
 }

@@ -4,6 +4,7 @@ use adw::prelude::*;
 use adw::subclass::prelude::*;
 use gtk::{gio, glib};
 
+use crate::i18n::{localize_hijri, tr, tr_fmt};
 use crate::models::{
     LocationProfile, PrayerName, ScheduleSnapshot, format_hm, format_hm_words, format_hms,
 };
@@ -20,7 +21,7 @@ mod imp {
     use super::*;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
-    #[template(resource = "/me/bykemah/namaztime/window.ui")]
+    #[template(resource = "/io/github/bykemalh/namaz_time/NamazTime/window.ui")]
     pub struct NamazTimeWindow {
         #[template_child]
         pub location_button: TemplateChild<gtk::Button>,
@@ -178,7 +179,8 @@ impl NamazTimeWindow {
     }
 
     pub fn set_location_title(&self, title: Option<&str>) {
-        let label = title.unwrap_or("Konum Seç");
+        let fallback = tr("Choose Location");
+        let label = title.unwrap_or(&fallback);
         self.imp().location_button_label.set_label(label);
     }
 
@@ -243,32 +245,40 @@ impl NamazTimeWindow {
             imp.main_stack.set_visible_child_name("content");
         }
 
+        let offline_fallback = tr("Showing offline cache");
         self.set_stale_banner(if snap.stale {
             snap.stale_reason
                 .as_deref()
-                .or(Some("Çevrimdışı önbellek verisi gösteriliyor"))
+                .or(Some(offline_fallback.as_str()))
         } else {
             None
         });
 
         imp.gregorian_date_label.set_label(&snap.local_date_str);
         if let Some(ref hijri) = snap.today.hijri {
-            imp.hijri_date_label.set_label(hijri);
+            let localized_hijri = localize_hijri(hijri);
+            imp.hijri_date_label.set_label(&localized_hijri);
             imp.hijri_date_label.set_visible(true);
         } else {
             imp.hijri_date_label.set_visible(false);
         }
 
         imp.current_prayer_badge
-            .set_label(&format!("Şu an: {} vakti", snap.current_prayer.label()));
+            .set_label(&tr_fmt("Now: %1", &[&snap.current_prayer.label()]));
 
         if let Some(ref next) = snap.next_prayer {
-            let tomorrow_prefix = if next.is_tomorrow { "Yarın " } else { "" };
-            imp.next_prayer_label.set_label(&format!(
-                "{tomorrow_prefix}{} vaktine ({}) kalan",
-                next.name.label(),
-                next.time_str
-            ));
+            let next_title = if next.is_tomorrow {
+                tr_fmt(
+                    "Time until tomorrow's %1 (%2)",
+                    &[&next.name.label(), &next.time_str],
+                )
+            } else {
+                tr_fmt(
+                    "Time until %1 (%2)",
+                    &[&next.name.label(), &next.time_str],
+                )
+            };
+            imp.next_prayer_label.set_label(&next_title);
 
             let digits = if show_seconds {
                 format_hms(next.remaining_seconds)
@@ -286,15 +296,16 @@ impl NamazTimeWindow {
                 imp.interval_progress.set_visible(false);
             }
         } else {
-            imp.next_prayer_label.set_label("Yarınki imsak vakti bekleniyor");
+            imp.next_prayer_label
+                .set_label(&tr("Waiting for tomorrow's Fajr time"));
             imp.countdown_label.set_label("--:--");
             imp.countdown_words_label
-                .set_label("Yarının verisi yenilendiğinde sayaç devam eder");
+                .set_label(&tr("Countdown resumes once tomorrow's schedule is refreshed"));
             imp.interval_progress.set_visible(false);
         }
 
         imp.timezone_label
-            .set_label(&format!("Saat dilimi: {}", snap.timezone));
+            .set_label(&tr_fmt("Time zone: %1", &[&snap.timezone]));
 
         let next_today = snap
             .next_prayer
@@ -313,12 +324,12 @@ impl NamazTimeWindow {
                 set_css_class(&item.row, "prayer-row-next", is_next);
 
                 if is_current {
-                    item.badge.set_label("Şu an");
+                    item.badge.set_label(&tr("Now"));
                     set_css_class(&item.badge, "pill-badge-accent", true);
                     set_css_class(&item.badge, "pill-badge-subtle", false);
                     item.badge.set_visible(true);
                 } else if is_next {
-                    item.badge.set_label("Sıradaki");
+                    item.badge.set_label(&tr("Next"));
                     set_css_class(&item.badge, "pill-badge-accent", false);
                     set_css_class(&item.badge, "pill-badge-subtle", true);
                     item.badge.set_visible(true);
@@ -329,7 +340,7 @@ impl NamazTimeWindow {
         }
 
         imp.source_label
-            .set_label(&format!("Kaynak: {}", snap.today.source.attribution_text()));
+            .set_label(&tr_fmt("Source: %1", &[&snap.today.source.attribution_text()]));
     }
 }
 

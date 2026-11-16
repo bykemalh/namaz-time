@@ -1,6 +1,7 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
+use crate::i18n::tr_fmt;
 use crate::models::{DayTimes, ProviderKind};
 use crate::providers::{ProviderError, check_response_status};
 
@@ -61,7 +62,7 @@ pub async fn fetch_countries(client: &Client) -> Result<Vec<MtopalCountry>, Prov
     let resp = check_response_status(resp).await?;
     resp.json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("mtopal ülkeler JSON: {e}")))
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("mtopal countries JSON: %1", &[&e.to_string()])))
 }
 
 pub async fn fetch_cities(
@@ -75,7 +76,7 @@ pub async fn fetch_cities(
     let resp = check_response_status(resp).await?;
     resp.json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("mtopal şehirler JSON: {e}")))
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("mtopal cities JSON: %1", &[&e.to_string()])))
 }
 
 pub async fn fetch_districts(
@@ -89,7 +90,7 @@ pub async fn fetch_districts(
     let resp = check_response_status(resp).await?;
     resp.json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("mtopal ilçeler JSON: {e}")))
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("mtopal districts JSON: %1", &[&e.to_string()])))
 }
 
 pub async fn fetch_prayer_times(
@@ -111,14 +112,14 @@ pub async fn fetch_prayer_times(
 
 pub(crate) fn parse_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTimes>, ProviderError> {
     let rows: Vec<MtopalPrayerRow> = serde_json::from_str(raw)
-        .map_err(|e| ProviderError::InvalidResponse(format!("mtopal vakit JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("mtopal times JSON: %1", &[&e.to_string()])))?;
 
     let mut out = Vec::with_capacity(rows.len());
     for row in rows {
         let iso_date = ddmmyyyy_to_iso(&row.miladi_tarih_kisa).ok_or_else(|| {
-            ProviderError::InvalidResponse(format!(
-                "mtopal geçersiz tarih formatı: {}",
-                row.miladi_tarih_kisa
+            ProviderError::InvalidResponse(tr_fmt(
+                "mtopal invalid date format: %1",
+                &[&row.miladi_tarih_kisa],
             ))
         })?;
         // Note: Intentionally ignore MiladiTarihUzunIso8601 (+03:00 hardcoded by upstream for all countries).

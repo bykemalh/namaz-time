@@ -32,7 +32,7 @@ pub struct DiskCache {
 impl DiskCache {
     pub fn default_xdg() -> Self {
         let base = gtk::glib::user_cache_dir();
-        Self::with_root(base.join("me.bykemah.namaztime"))
+        Self::with_root(base.join("io.github.bykemalh.namaz_time.NamazTime"))
     }
 
     pub fn with_root(root: PathBuf) -> Self {

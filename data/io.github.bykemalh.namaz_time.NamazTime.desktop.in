@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Prayer Times
+Comment=Live prayer time countdown and system tray utility
+Exec=namaz-time
+Icon=io.github.bykemalh.namaz_time.NamazTime
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=Prayer;Namaz;Diyanet;Salah;Adhan;GTK;
+StartupNotify=true
+DBusActivatable=true

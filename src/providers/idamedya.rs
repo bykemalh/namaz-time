@@ -1,6 +1,7 @@
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 
+use crate::i18n::{tr, tr_fmt};
 use crate::models::{DayTimes, ProviderKind};
 use crate::providers::{ProviderError, check_response_status};
 
@@ -51,11 +52,11 @@ pub async fn fetch_provinces(client: &Client) -> Result<Vec<IdamedyaProvince>, P
     let body: IdamedyaEnvelope<Vec<IdamedyaProvince>> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İDA Medya iller JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("IDA Medya provinces JSON: %1", &[&e.to_string()])))?;
     if !body.ok {
         return Err(ProviderError::InvalidResponse(
             body.error
-                .unwrap_or_else(|| "İDA Medya ok=false".to_string()),
+                .unwrap_or_else(|| tr("IDA Medya ok=false")),
         ));
     }
     Ok(body.data.unwrap_or_default())
@@ -73,11 +74,11 @@ pub async fn fetch_districts(
     let body: IdamedyaEnvelope<Vec<IdamedyaDistrict>> = resp
         .json()
         .await
-        .map_err(|e| ProviderError::InvalidResponse(format!("İDA Medya ilçeler JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("IDA Medya districts JSON: %1", &[&e.to_string()])))?;
     if !body.ok {
         return Err(ProviderError::InvalidResponse(
             body.error
-                .unwrap_or_else(|| "İDA Medya ok=false".to_string()),
+                .unwrap_or_else(|| tr("IDA Medya ok=false")),
         ));
     }
     Ok(body.data.unwrap_or_default())
@@ -102,16 +103,16 @@ pub async fn fetch_prayer_times(
 
 pub(crate) fn parse_times_json(raw: &str, now_unix: i64) -> Result<Vec<DayTimes>, ProviderError> {
     let env: IdamedyaEnvelope<IdamedyaTimesPayload> = serde_json::from_str(raw)
-        .map_err(|e| ProviderError::InvalidResponse(format!("İDA Medya vakit JSON: {e}")))?;
+        .map_err(|e| ProviderError::InvalidResponse(tr_fmt("IDA Medya times JSON: %1", &[&e.to_string()])))?;
     if !env.ok {
         return Err(ProviderError::InvalidResponse(
             env.error
-                .unwrap_or_else(|| "İDA Medya ok=false".to_string()),
+                .unwrap_or_else(|| tr("IDA Medya ok=false")),
         ));
     }
     let payload = env
         .data
-        .ok_or_else(|| ProviderError::InvalidResponse("İDA Medya data boş".into()))?;
+        .ok_or_else(|| ProviderError::InvalidResponse(tr("IDA Medya returned empty data")))?;
 
     let mut out = Vec::with_capacity(payload.gunler.len());
     for row in payload.gunler {

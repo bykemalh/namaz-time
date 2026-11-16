@@ -3,6 +3,8 @@ use std::path::Path;
 use ashpd::desktop::background::{Background, BackgroundProxy, SetStatusOptions};
 use tracing::{debug, info, warn};
 
+use crate::i18n::tr_fmt;
+
 pub fn is_sandboxed() -> bool {
     Path::new("/.flatpak-info").exists()
 }
@@ -14,14 +16,19 @@ pub async fn request_background(autostart: bool) -> Result<(bool, bool), String>
     }
 
     let response = Background::request()
-        .reason("Namaz vakitlerini arka planda ve sistem tepsisinde göstermek için")
+        .reason(
+            crate::i18n::tr(
+                "Display prayer times and live countdown in the background and system tray",
+            )
+            .as_str(),
+        )
         .auto_start(autostart)
         .dbus_activatable(true)
         .send()
         .await
-        .map_err(|e| format!("Background portal isteği başarısız: {e}"))?
+        .map_err(|e| tr_fmt("Background portal request failed: %1", &[&e.to_string()]))?
         .response()
-        .map_err(|e| format!("Background portal yanıtı alınamadı: {e}"))?;
+        .map_err(|e| tr_fmt("Background portal response failed: %1", &[&e.to_string()]))?;
 
     info!(
         "Background portal sonucu: background={}, autostart={}",
