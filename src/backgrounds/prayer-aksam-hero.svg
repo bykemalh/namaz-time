@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="145" viewBox="0 0 640 290">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a142d"/>
+      <stop offset="35%" stop-color="#8b2437"/>
+      <stop offset="70%" stop-color="#db4c27"/>
+      <stop offset="100%" stop-color="#f79634"/>
+    </linearGradient>
+    <radialGradient id="sunsetFlare" gradientUnits="userSpaceOnUse" cx="310" cy="248" r="220">
+      <stop offset="0%" stop-color="#fff7d6" stop-opacity="0.96"/>
+      <stop offset="16%" stop-color="#fbbf24" stop-opacity="0.72"/>
+      <stop offset="45%" stop-color="#f97316" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#9f1239" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="0.36"/>
+      <stop offset="100%" stop-color="#881337" stop-opacity="0.16"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="290" fill="url(#sky)"/>
+  <rect width="640" height="290" fill="url(#sunsetFlare)"/>
+  <path fill="url(#cloudGrad)" d="M 59.4,88.0 C 48.6,88.0 45.9,78.7 67.5,77.8 C 72.9,67.6 102.6,65.9 113.4,73.5 C 121.5,60.8 159.3,60.8 167.4,73.5 C 180.9,67.6 207.9,71.0 207.9,79.5 C 224.1,80.4 221.4,88.0 205.2,88.0 Z"/>
+  <path fill="url(#cloudGrad)" d="M 411.0,82.2 C 399.0,82.2 396.0,72.9 420.0,72.0 C 426.0,61.8 459.0,60.1 471.0,67.8 C 480.0,55.0 522.0,55.0 531.0,67.8 C 546.0,61.8 576.0,65.2 576.0,73.7 C 594.0,74.6 591.0,82.2 573.0,82.2 Z"/>
+  <circle cx="310" cy="248" r="21" fill="#fffbeb"/>
+  <path fill="#3a141d" fill-opacity="0.58" d="M 0,290 L 0,258 Q 130,245 275,259 Q 420,246 640,258 L 640,290 Z"/>
+  <polygon fill="#160a10" points="0,290 0,259.1 17,259.1 17,269.2 38,269.2 38,260.9 62,260.9 62,267.4 82,267.4 82,260.0 108,260.0 108,264.5 138,264.5 138,265.0 165,265.0 165,262.4 190,262.4 190,259.1 218,259.1 218,263.4 234,263.4 234,259.5 250,259.5 250,262.5 281,262.5 281,265.4 314,265.4 314,270.4 336,270.4 336,269.9 358,269.9 358,268.7 386,268.7 386,266.1 407,266.1 407,267.0 431,267.0 431,269.7 446,269.7 446,267.3 474,267.3 474,263.6 500,263.6 500,265.4 522,265.4 522,268.3 542,268.3 542,269.1 574,269.1 574,267.4 595,267.4 595,261.1 614,261.1 614,261.1 640,261.1 640,290"/>
+  <path fill="#11070c" d="M 331.2,276.0 L 331.2,254.6 L 360.9,251.2 L 360.9,238.1 Q 385.6,214.9 408.8,229.8 L 408.8,219.9 C 410.4,183.6 489.6,183.6 491.2,219.9 L 491.2,229.8 Q 514.4,214.9 539.1,238.1 L 539.1,251.2 L 568.8,254.6 L 568.8,276.0 Z"/>
+  <rect fill="#11070c" x="448.5" y="181.9" width="3.0" height="13.2"/>
+  <circle fill="#11070c" cx="450.0" cy="183.6" r="2.8"/>
+  <polygon fill="#11070c" points="369.1,276.0 375.8,276.0 374.8,177.0 370.1,177.0"/>
+  <rect fill="#11070c" x="368.2" y="196.8" width="8.6" height="3.5" rx="1.3"/>
+  <rect fill="#11070c" x="368.2" y="178.7" width="8.6" height="3.5" rx="1.3"/>
+  <polygon fill="#11070c" points="370.1,177.0 374.8,177.0 372.4,153.9"/>
+  <rect fill="#11070c" x="371.5" y="147.3" width="1.8" height="7.4"/>
+  <polygon fill="#11070c" points="524.2,276.0 530.8,276.0 529.9,177.0 525.2,177.0"/>
+  <rect fill="#11070c" x="523.3" y="196.8" width="8.6" height="3.5" rx="1.3"/>
+  <rect fill="#11070c" x="523.3" y="178.7" width="8.6" height="3.5" rx="1.3"/>
+  <polygon fill="#11070c" points="525.2,177.0 529.9,177.0 527.5,153.9"/>
+  <rect fill="#11070c" x="526.6" y="147.3" width="1.8" height="7.4"/>
+  <polygon fill="#11070c" points="337.8,276.0 344.4,276.0 343.4,206.7 338.8,206.7"/>
+  <rect fill="#11070c" x="336.8" y="210.0" width="8.6" height="3.5" rx="1.3"/>
+  <polygon fill="#11070c" points="338.8,206.7 343.4,206.7 341.1,183.6"/>
+  <rect fill="#11070c" x="340.2" y="177.0" width="1.8" height="7.4"/>
+  <polygon fill="#11070c" points="555.6,276.0 562.2,276.0 561.2,206.7 556.6,206.7"/>
+  <rect fill="#11070c" x="554.6" y="210.0" width="8.6" height="3.5" rx="1.3"/>
+  <polygon fill="#11070c" points="556.6,206.7 561.2,206.7 558.9,183.6"/>
+  <rect fill="#11070c" x="558.0" y="177.0" width="1.8" height="7.4"/>
+</svg>

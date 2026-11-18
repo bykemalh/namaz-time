@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="58" viewBox="0 0 640 116">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#060c1e"/>
+      <stop offset="52%" stop-color="#111d40"/>
+      <stop offset="84%" stop-color="#2e2352"/>
+      <stop offset="100%" stop-color="#532d5c"/>
+    </linearGradient>
+    <radialGradient id="horizonGlow" gradientUnits="userSpaceOnUse" cx="350" cy="116" r="180">
+      <stop offset="0%" stop-color="#9e4d7e" stop-opacity="0.52"/>
+      <stop offset="55%" stop-color="#4c2c66" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#111d40" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonGlow" gradientUnits="userSpaceOnUse" cx="242" cy="34" r="40.8">
+      <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.34"/>
+      <stop offset="45%" stop-color="#93c5fd" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7c6ba6" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#3b2f63" stop-opacity="0.06"/>
+    </linearGradient>
+    <mask id="crescentCut">
+      <rect width="640" height="116" fill="black"/>
+      <circle cx="242" cy="34" r="12" fill="white"/>
+      <circle cx="247.0" cy="31.8" r="10.1" fill="black"/>
+    </mask>
+  </defs>
+  <rect width="640" height="116" fill="url(#sky)"/>
+  <rect width="640" height="116" fill="url(#horizonGlow)"/>
+  <circle cx="368.7" cy="22.8" r="1.42" fill="#e2e8f0" fill-opacity="0.85"/>
+  <circle cx="300.3" cy="58.4" r="0.74" fill="#e2e8f0" fill-opacity="0.39"/>
+  <circle cx="193.1" cy="60.6" r="0.74" fill="#e2e8f0" fill-opacity="0.88"/>
+  <circle cx="62.2" cy="22.7" r="0.63" fill="#e2e8f0" fill-opacity="0.75"/>
+  <circle cx="239.9" cy="43.8" r="0.84" fill="#e2e8f0" fill-opacity="0.66"/>
+  <circle cx="262.3" cy="23.8" r="0.94" fill="#e2e8f0" fill-opacity="0.45"/>
+  <circle cx="86.5" cy="70.6" r="1.16" fill="#e2e8f0" fill-opacity="0.68"/>
+  <circle cx="549.5" cy="38.0" r="0.89" fill="#e2e8f0" fill-opacity="0.52"/>
+  <circle cx="262.7" cy="58.8" r="0.56" fill="#e2e8f0" fill-opacity="0.55"/>
+  <circle cx="341.1" cy="34.3" r="0.57" fill="#e2e8f0" fill-opacity="0.71"/>
+  <circle cx="25.7" cy="50.9" r="0.69" fill="#e2e8f0" fill-opacity="0.27"/>
+  <circle cx="128.5" cy="13.0" r="0.69" fill="#e2e8f0" fill-opacity="0.70"/>
+  <circle cx="457.0" cy="35.6" r="1.14" fill="#e2e8f0" fill-opacity="0.56"/>
+  <circle cx="319.1" cy="74.6" r="0.83" fill="#e2e8f0" fill-opacity="0.82"/>
+  <circle cx="434.6" cy="59.9" r="0.56" fill="#e2e8f0" fill-opacity="0.30"/>
+  <circle cx="39.2" cy="34.3" r="1.40" fill="#e2e8f0" fill-opacity="0.82"/>
+  <circle cx="523.1" cy="17.0" r="1.19" fill="#e2e8f0" fill-opacity="0.75"/>
+  <circle cx="505.6" cy="68.2" r="0.68" fill="#e2e8f0" fill-opacity="0.37"/>
+  <circle cx="495.5" cy="64.1" r="1.35" fill="#e2e8f0" fill-opacity="0.54"/>
+  <circle cx="553.7" cy="18.6" r="1.41" fill="#e2e8f0" fill-opacity="0.82"/>
+  <circle cx="222.5" cy="13.1" r="1.04" fill="#e2e8f0" fill-opacity="0.70"/>
+  <circle cx="230.2" cy="12.4" r="0.80" fill="#e2e8f0" fill-opacity="0.79"/>
+  <circle cx="74.4" cy="79.2" r="0.78" fill="#e2e8f0" fill-opacity="0.38"/>
+  <circle cx="87.3" cy="82.6" r="1.36" fill="#e2e8f0" fill-opacity="0.46"/>
+  <circle cx="77.4" cy="57.7" r="1.35" fill="#e2e8f0" fill-opacity="0.26"/>
+  <circle cx="399.8" cy="73.1" r="0.96" fill="#e2e8f0" fill-opacity="0.62"/>
+  <circle cx="502.6" cy="26.1" r="0.80" fill="#e2e8f0" fill-opacity="0.68"/>
+  <circle cx="351.4" cy="48.7" r="0.85" fill="#e2e8f0" fill-opacity="0.86"/>
+  <circle cx="192.9" cy="59.6" r="1.35" fill="#e2e8f0" fill-opacity="0.51"/>
+  <circle cx="52.6" cy="24.8" r="0.61" fill="#e2e8f0" fill-opacity="0.35"/>
+  <circle cx="92.3" cy="34.0" r="0.88" fill="#e2e8f0" fill-opacity="0.54"/>
+  <circle cx="419.1" cy="59.4" r="1.17" fill="#e2e8f0" fill-opacity="0.49"/>
+  <circle cx="417.7" cy="49.8" r="0.66" fill="#e2e8f0" fill-opacity="0.60"/>
+  <circle cx="211.0" cy="59.4" r="1.21" fill="#e2e8f0" fill-opacity="0.41"/>
+  <circle cx="281.1" cy="42.6" r="0.82" fill="#e2e8f0" fill-opacity="0.28"/>
+  <circle cx="49.8" cy="83.5" r="1.22" fill="#e2e8f0" fill-opacity="0.54"/>
+  <circle cx="242" cy="34" r="40.8" fill="url(#moonGlow)"/>
+  <rect x="228" y="20" width="28" height="28" fill="#f8fafc" mask="url(#crescentCut)"/>
+  <path fill="url(#cloudGrad)" d="M 87.2,83.4 C 76.8,83.4 74.2,74.0 95.0,73.2 C 100.2,63.0 128.8,61.3 139.2,68.9 C 147.0,56.2 183.4,56.2 191.2,68.9 C 204.2,63.0 230.2,66.4 230.2,74.9 C 245.8,75.7 243.2,83.4 227.6,83.4 Z"/>
+  <path fill="url(#cloudGrad)" d="M 436.6,76.4 C 425.4,76.4 422.6,67.0 445.0,66.2 C 450.6,56.0 481.4,54.3 492.6,61.9 C 501.0,49.2 540.2,49.2 548.6,61.9 C 562.6,56.0 590.6,59.4 590.6,67.9 C 607.4,68.8 604.6,76.4 587.8,76.4 Z"/>
+  <path fill="#0b1124" fill-opacity="0.72" d="M 0,116 L 0,97 Q 140,85 310,95 Q 470,83 640,97 L 640,116 Z"/>
+  <polygon fill="#070b18" points="0,116 0,94.6 29,94.6 29,99.6 58,99.6 58,102.7 91,102.7 91,99.3 122,99.3 122,95.5 156,95.5 156,99.6 174,99.6 174,103.9 193,103.9 193,97.9 209,97.9 209,93.4 236,93.4 236,97.2 270,97.2 270,104.8 304,104.8 304,104.2 335,104.2 335,102.7 351,102.7 351,97.8 373,97.8 373,101.1 402,101.1 402,94.9 435,94.9 435,102.2 466,102.2 466,99.0 490,99.0 490,99.5 507,99.5 507,100.1 530,100.1 530,93.1 562,93.1 562,96.5 579,96.5 579,95.9 604,95.9 604,101.5 635,101.5 635,98.2 640,98.2 640,116"/>
+  <path fill="#050812" d="M 301.6,111.0 L 301.6,97.7 L 319.9,95.7 L 319.9,87.5 Q 335.2,73.3 349.5,82.4 L 349.5,76.3 C 350.5,53.9 399.5,53.9 400.5,76.3 L 400.5,82.4 Q 414.8,73.3 430.1,87.5 L 430.1,95.7 L 448.4,97.7 L 448.4,111.0 Z"/>
+  <rect fill="#050812" x="374.1" y="52.9" width="1.8" height="8.2"/>
+  <circle fill="#050812" cx="375.0" cy="53.9" r="1.7"/>
+  <polygon fill="#050812" points="325.0,111.0 329.1,111.0 328.5,49.8 325.6,49.8"/>
+  <rect fill="#050812" x="324.4" y="62.0" width="5.3" height="2.1" rx="0.8"/>
+  <rect fill="#050812" x="324.4" y="50.8" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#050812" points="325.6,49.8 328.5,49.8 327.1,35.5"/>
+  <rect fill="#050812" x="326.5" y="31.4" width="1.1" height="4.6"/>
+  <polygon fill="#050812" points="420.9,111.0 425.0,111.0 424.4,49.8 421.5,49.8"/>
+  <rect fill="#050812" x="420.3" y="62.0" width="5.3" height="2.1" rx="0.8"/>
+  <rect fill="#050812" x="420.3" y="50.8" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#050812" points="421.5,49.8 424.4,49.8 422.9,35.5"/>
+  <rect fill="#050812" x="422.4" y="31.4" width="1.1" height="4.6"/>
+  <polygon fill="#050812" points="305.6,111.0 309.7,111.0 309.1,68.2 306.3,68.2"/>
+  <rect fill="#050812" x="305.0" y="70.2" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#050812" points="306.3,68.2 309.1,68.2 307.7,53.9"/>
+  <rect fill="#050812" x="307.1" y="49.8" width="1.1" height="4.6"/>
+  <polygon fill="#050812" points="440.3,111.0 444.4,111.0 443.7,68.2 440.9,68.2"/>
+  <rect fill="#050812" x="439.7" y="70.2" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#050812" points="440.9,68.2 443.7,68.2 442.3,53.9"/>
+  <rect fill="#050812" x="441.8" y="49.8" width="1.1" height="4.6"/>
+</svg>

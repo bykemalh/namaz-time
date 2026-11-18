@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="58" viewBox="0 0 640 116">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a142d"/>
+      <stop offset="35%" stop-color="#8b2437"/>
+      <stop offset="70%" stop-color="#db4c27"/>
+      <stop offset="100%" stop-color="#f79634"/>
+    </linearGradient>
+    <radialGradient id="sunsetFlare" gradientUnits="userSpaceOnUse" cx="310" cy="94" r="135">
+      <stop offset="0%" stop-color="#fff7d6" stop-opacity="0.96"/>
+      <stop offset="16%" stop-color="#fbbf24" stop-opacity="0.72"/>
+      <stop offset="45%" stop-color="#f97316" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#9f1239" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="0.36"/>
+      <stop offset="100%" stop-color="#881337" stop-opacity="0.16"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="116" fill="url(#sky)"/>
+  <rect width="640" height="116" fill="url(#sunsetFlare)"/>
+  <path fill="url(#cloudGrad)" d="M 59.4,39.3 C 48.6,39.3 45.9,29.9 67.5,29.1 C 72.9,18.9 102.6,17.2 113.4,24.8 C 121.5,12.1 159.3,12.1 167.4,24.8 C 180.9,18.9 207.9,22.3 207.9,30.8 C 224.1,31.6 221.4,39.3 205.2,39.3 Z"/>
+  <path fill="url(#cloudGrad)" d="M 411.0,37.0 C 399.0,37.0 396.0,27.6 420.0,26.8 C 426.0,16.6 459.0,14.9 471.0,22.5 C 480.0,9.8 522.0,9.8 531.0,22.5 C 546.0,16.6 576.0,20.0 576.0,28.5 C 594.0,29.3 591.0,37.0 573.0,37.0 Z"/>
+  <circle cx="310" cy="94" r="11" fill="#fffbeb"/>
+  <path fill="#3a141d" fill-opacity="0.58" d="M 0,116 L 0,93 Q 130,80 275,94 Q 420,81 640,93 L 640,116 Z"/>
+  <polygon fill="#160a10" points="0,116 0,94.1 17,94.1 17,104.2 38,104.2 38,95.9 62,95.9 62,102.4 82,102.4 82,95.0 108,95.0 108,99.5 138,99.5 138,100.0 165,100.0 165,97.4 190,97.4 190,94.1 218,94.1 218,98.4 234,98.4 234,94.5 250,94.5 250,97.5 281,97.5 281,100.4 314,100.4 314,105.4 336,105.4 336,104.9 358,104.9 358,103.7 386,103.7 386,101.1 407,101.1 407,102.0 431,102.0 431,104.7 446,104.7 446,102.3 474,102.3 474,98.6 500,98.6 500,100.4 522,100.4 522,103.3 542,103.3 542,104.1 574,104.1 574,102.4 595,102.4 595,96.1 614,96.1 614,96.1 640,96.1 640,116"/>
+  <path fill="#11070c" d="M 368.6,111.0 L 368.6,97.7 L 386.9,95.7 L 386.9,87.5 Q 402.2,73.3 416.5,82.4 L 416.5,76.3 C 417.5,53.9 466.5,53.9 467.5,76.3 L 467.5,82.4 Q 481.8,73.3 497.1,87.5 L 497.1,95.7 L 515.4,97.7 L 515.4,111.0 Z"/>
+  <rect fill="#11070c" x="441.1" y="52.9" width="1.8" height="8.2"/>
+  <circle fill="#11070c" cx="442.0" cy="53.9" r="1.7"/>
+  <polygon fill="#11070c" points="392.0,111.0 396.1,111.0 395.5,49.8 392.6,49.8"/>
+  <rect fill="#11070c" x="391.4" y="62.0" width="5.3" height="2.1" rx="0.8"/>
+  <rect fill="#11070c" x="391.4" y="50.8" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#11070c" points="392.6,49.8 395.5,49.8 394.1,35.5"/>
+  <rect fill="#11070c" x="393.5" y="31.4" width="1.1" height="4.6"/>
+  <polygon fill="#11070c" points="487.9,111.0 492.0,111.0 491.4,49.8 488.5,49.8"/>
+  <rect fill="#11070c" x="487.3" y="62.0" width="5.3" height="2.1" rx="0.8"/>
+  <rect fill="#11070c" x="487.3" y="50.8" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#11070c" points="488.5,49.8 491.4,49.8 489.9,35.5"/>
+  <rect fill="#11070c" x="489.4" y="31.4" width="1.1" height="4.6"/>
+  <polygon fill="#11070c" points="372.6,111.0 376.7,111.0 376.1,68.2 373.3,68.2"/>
+  <rect fill="#11070c" x="372.0" y="70.2" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#11070c" points="373.3,68.2 376.1,68.2 374.7,53.9"/>
+  <rect fill="#11070c" x="374.1" y="49.8" width="1.1" height="4.6"/>
+  <polygon fill="#11070c" points="507.3,111.0 511.4,111.0 510.7,68.2 507.9,68.2"/>
+  <rect fill="#11070c" x="506.7" y="70.2" width="5.3" height="2.1" rx="0.8"/>
+  <polygon fill="#11070c" points="507.9,68.2 510.7,68.2 509.3,53.9"/>
+  <rect fill="#11070c" x="508.8" y="49.8" width="1.1" height="4.6"/>
+</svg>

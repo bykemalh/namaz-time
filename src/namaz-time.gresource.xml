@@ -12,5 +12,20 @@
     <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-aksam-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-yatsi-symbolic.svg</file>
     <file preprocess="xml-stripblanks">icons/scalable/actions/namaz-error-symbolic.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-imsak.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-gunes.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-ogle.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-ikindi.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-aksam.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-yatsi.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-imsak-hero.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-gunes-hero.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-ogle-hero.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-ikindi-hero.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-aksam-hero.svg</file>
+    <file preprocess="xml-stripblanks">backgrounds/prayer-yatsi-hero.svg</file>
+    <file>backgrounds/mosque-sultanahmet.jpg</file>
+    <file>backgrounds/mosque-ayasofya.jpg</file>
+    <file>backgrounds/mosque-suleymaniye.jpg</file>
   </gresource>
 </gresources>
