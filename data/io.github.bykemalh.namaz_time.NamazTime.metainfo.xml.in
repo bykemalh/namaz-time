@@ -7,11 +7,11 @@
   <name>Prayer Times</name>
   <summary>Live prayer time countdown</summary>
   <description>
-    <p>Prayer Times (Namaz Vakti) is a native GTK4 and Libadwaita prayer times application for GNOME. It offers three-stage Diyanet API fallback, smart offline caching, and GNOME system tray integration.</p>
+    <p>Prayer Times (Namaz Vakti) is a native GTK4 and Libadwaita prayer times application for GNOME. It offers multi-provider Diyanet API fallback, smart offline caching, and GNOME system tray integration.</p>
     <ul>
       <li>IANA timezone-aware schedules for cities and districts worldwide and across Turkey</li>
       <li>Live countdown in the GNOME top bar with a quick six-prayer tray menu</li>
-      <li>Verified multi-provider fallback (Imsakiyem, mtopal v1.5, and IDA Medya)</li>
+      <li>Verified multi-provider fallback (Imsakiyem, mtopal v1.5, EzanVakti, and AlAdhan)</li>
     </ul>
   </description>
 

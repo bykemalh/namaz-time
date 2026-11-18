@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: namaz-time 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 01:37+0300\n"
+"POT-Creation-Date: 2026-11-19 01:16+0300\n"
 "PO-Revision-Date: 2026-11-16 01:15+0300\n"
 "Last-Translator: Kemal (@bykemalh)\n"
 "Language-Team: Russian\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.desktop.in:2
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:7
-#: src/application.rs:695 src/services/tray.rs:55 src/services/tray.rs:289
+#: src/application.rs:723 src/services/tray.rs:55 src/services/tray.rs:292
 #: src/window.ui:6
 msgid "Prayer Times"
 msgstr "Время намаза"
@@ -48,8 +48,9 @@ msgid "Preferred prayer time provider"
 msgstr "Предпочтительный источник расписания"
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:12
-msgid "Data source preference: auto, imsakiyem, mtopal, or idamedya."
-msgstr "Выбор источника данных: auto, imsakiyem, mtopal или idamedya."
+msgid "Data source preference: auto, imsakiyem, mtopal, ezanvakti, or aladhan."
+msgstr ""
+"Выбор источника данных: auto, imsakiyem, mtopal, ezanvakti или aladhan."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:16
 msgid "Run in background when window is closed"
@@ -97,13 +98,43 @@ msgid "Display live seconds in the main window countdown timer."
 msgstr "Отображать секунды в реальном времени в таймере главного окна."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:41
-#: src/ui/preferences.rs:166
+#: src/ui/preferences.rs:219
 msgid "Application language"
 msgstr "Язык интерфейса"
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:42
 msgid "Display language override: system, tr, en, or ru."
 msgstr "Переопределение языка интерфейса: system, tr, en или ru."
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:46
+msgid "Hero card background theme"
+msgstr "Фоновая тема главной карточки"
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:47
+msgid ""
+"Selected hero card scene: sultanahmet, ayasofya, suleymaniye, or classic."
+msgstr ""
+"Выбранная сцена главной карточки: sultanahmet, ayasofya, suleymaniye или "
+"classic."
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:51
+msgid "Interface visual style"
+msgstr "Визуальный стиль интерфейса"
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:52
+msgid "UI theme style: illustrated, colorful, or minimal."
+msgstr "Стиль темы интерфейса: illustrated, colorful или minimal."
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:56
+#: src/ui/preferences.rs:139
+msgid "Colorful prayer icons"
+msgstr "Цветные значки намазов"
+
+#: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:57
+msgid ""
+"Tint each prayer icon with its time-of-day accent color when not in minimal "
+"mode."
+msgstr "Окрашивать каждый значок намаза в цвет времени суток вне минимального режима."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:8
 msgid "Live prayer time countdown"
@@ -112,12 +143,13 @@ msgstr "Живой таймер времени намаза"
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:10
 msgid ""
 "Prayer Times (Namaz Vakti) is a native GTK4 and Libadwaita prayer times "
-"application for GNOME. It offers three-stage Diyanet API fallback, smart "
+"application for GNOME. It offers multi-provider Diyanet API fallback, smart "
 "offline caching, and GNOME system tray integration."
 msgstr ""
 "«Время намаза» (Namaz Vakti) — нативное приложение для рабочего стола GNOME "
-"на базе GTK4 и Libadwaita. Оно поддерживает трёхуровневое резервирование API "
-"Диянета, умное автономное кэширование и интеграцию с системным треем GNOME."
+"на базе GTK4 и Libadwaita. Оно поддерживает многоуровневое резервирование "
+"API Диянета, умное автономное кэширование и интеграцию с системным треем "
+"GNOME."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:12
 msgid ""
@@ -135,10 +167,11 @@ msgstr ""
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:14
 msgid ""
-"Verified multi-provider fallback (Imsakiyem, mtopal v1.5, and IDA Medya)"
+"Verified multi-provider fallback (Imsakiyem, mtopal v1.5, EzanVakti, and "
+"AlAdhan)"
 msgstr ""
-"Проверенное резервирование между источниками (Imsakiyem, mtopal v1.5 и IDA "
-"Medya)"
+"Проверенное резервирование между источниками (Imsakiyem, mtopal v1.5, "
+"EzanVakti и AlAdhan)"
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:20
 msgid "Live countdown and daily prayer times (English)"
@@ -165,48 +198,52 @@ msgstr ""
 msgid "Kemal (@bykemalh)"
 msgstr "Кемаль (@bykemalh)"
 
-#: src/application.rs:358
+#: src/application.rs:382
 msgid "Select a location first"
 msgstr "Сначала выберите местоположение"
 
-#: src/application.rs:422
+#: src/application.rs:446
 msgid "Prayer times updated"
 msgstr "Время намаза обновлено"
 
-#: src/application.rs:444
+#: src/application.rs:468
 msgid "Update failed; showing cached schedule (%1)"
 msgstr "Не удалось обновить данные, показан сохранённый кэш (%1)"
 
-#: src/application.rs:455
+#: src/application.rs:479
 msgid "Refresh failed: %1"
 msgstr "Ошибка обновления: %1"
 
-#: src/application.rs:691
+#: src/application.rs:718
 msgid "Imsakiyem API (Diyanet data)"
 msgstr "Imsakiyem API (данные Диянета)"
 
-#: src/application.rs:692
+#: src/application.rs:719
 msgid "mtopal Prayer Times v1.5 (Diyanet data)"
 msgstr "mtopal Prayer Times v1.5 (данные Диянета)"
 
-#: src/application.rs:693
-msgid "IDA Medya Prayer Times API (Turkey / Diyanet data)"
-msgstr "IDA Medya Prayer Times API (Турция / данные Диянета)"
+#: src/application.rs:720
+msgid "EzanVakti API (emushaf.net / Diyanet data)"
+msgstr "EzanVakti API (emushaf.net / данные Диянета)"
 
-#: src/application.rs:703
+#: src/application.rs:721
+msgid "AlAdhan API (Diyanet method fallback)"
+msgstr "AlAdhan API (резерв по методу Диянета)"
+
+#: src/application.rs:731
 msgid ""
 "Native GNOME prayer times application with top-bar countdown, system tray "
-"menu, and three-stage Diyanet API fallback."
+"menu, and multi-provider Diyanet API fallback."
 msgstr ""
 "Нативное приложение GNOME для отслеживания времени намаза с таймером на "
-"верхней панели, меню в системном трее и трёхуровневым резервированием API "
+"верхней панели, меню в системном трее и многоуровневым резервированием API "
 "Диянета."
 
-#: src/application.rs:709
+#: src/application.rs:737
 msgid "GitHub Profile"
 msgstr "Профиль на GitHub"
 
-#: src/application.rs:711
+#: src/application.rs:739
 msgid "Data Sources"
 msgstr "Источники данных"
 
@@ -258,126 +295,173 @@ msgstr "зуль-када"
 msgid "Dhu al-Hijjah"
 msgstr "зуль-хиджа"
 
-#: src/models/prayer.rs:32 src/ui/preferences.rs:30 src/ui/preferences.rs:73
+#: src/models/prayer.rs:39 src/ui/preferences.rs:30 src/ui/preferences.rs:76
 msgid "Imsakiyem"
 msgstr "Imsakiyem"
 
-#: src/models/prayer.rs:34 src/ui/preferences.rs:36
-msgid "IDA Medya"
-msgstr "IDA Medya"
+#: src/models/prayer.rs:41 src/ui/preferences.rs:77
+msgid "EzanVakti (emushaf.net)"
+msgstr "EzanVakti (emushaf.net)"
 
-#: src/models/prayer.rs:39
+#: src/models/prayer.rs:42 src/ui/preferences.rs:78
+msgid "AlAdhan (Diyanet Method)"
+msgstr "AlAdhan (метод Диянета)"
+
+#: src/models/prayer.rs:48
+msgid "%1 (Diyanet method)"
+msgstr "%1 (метод Диянета)"
+
+#: src/models/prayer.rs:50
 msgid "%1 (Diyanet data)"
 msgstr "%1 (данные Диянета)"
 
-#: src/models/prayer.rs:81
+#: src/models/prayer.rs:95
 msgid "Fajr"
 msgstr "Фаджр"
 
-#: src/models/prayer.rs:82
+#: src/models/prayer.rs:96
 msgid "Sunrise"
 msgstr "Восход"
 
-#: src/models/prayer.rs:83
+#: src/models/prayer.rs:97
 msgid "Dhuhr"
 msgstr "Зухр"
 
-#: src/models/prayer.rs:84
+#: src/models/prayer.rs:98
 msgid "Asr"
 msgstr "Аср"
 
-#: src/models/prayer.rs:85
+#: src/models/prayer.rs:99
 msgid "Maghrib"
 msgstr "Магриб"
 
-#: src/models/prayer.rs:86
+#: src/models/prayer.rs:100
 msgid "Isha"
 msgstr "Иша"
 
-#: src/models/prayer.rs:138 src/models/prayer.rs:152
+#: src/models/prayer.rs:163 src/models/prayer.rs:177
 msgid "Invalid date: %1"
 msgstr "Некорректная дата: %1"
 
-#: src/models/prayer.rs:143
+#: src/models/prayer.rs:168
 msgid "Invalid %1 time: %2"
 msgstr "Некорректное время (%1): %2"
 
-#: src/models/prayer.rs:154
+#: src/models/prayer.rs:179
 msgid "Invalid %1 time"
 msgstr "Некорректное время (%1)"
 
-#: src/models/prayer.rs:158
+#: src/models/prayer.rs:183
 msgid "Time zone error: %1"
 msgstr "Ошибка часового пояса: %1"
 
-#: src/models/prayer.rs:233
+#: src/models/prayer.rs:240
+msgid "Sultanahmet Mosque"
+msgstr "Мечеть Султанахмет"
+
+#: src/models/prayer.rs:241
+msgid "Hagia Sophia"
+msgstr "Айя-София"
+
+#: src/models/prayer.rs:242
+msgid "Süleymaniye Mosque"
+msgstr "Мечеть Сулеймание"
+
+#: src/models/prayer.rs:243
+msgid "Classic Sky"
+msgstr "Классическое небо"
+
+#: src/models/prayer.rs:289
+msgid "Illustrated (Mosque & Scenes)"
+msgstr "С иллюстрациями (мечети и сцены)"
+
+#: src/models/prayer.rs:290
+msgid "Colorful Icons (Clean Cards)"
+msgstr "Цветные значки (чистые карточки)"
+
+#: src/models/prayer.rs:291
+msgid "Minimal (Monochrome Grey)"
+msgstr "Минималистичный (серый монохром)"
+
+#: src/models/prayer.rs:358
 msgid "Invalid time zone (%1): %2"
 msgstr "Некорректный часовой пояс (%1): %2"
 
-#: src/models/prayer.rs:241
+#: src/models/prayer.rs:366
 msgid "No prayer schedule found for today (%1)"
 msgstr "Расписание на сегодня (%1) не найдено"
 
-#: src/models/prayer.rs:370
+#: src/models/prayer.rs:495
 msgid "Time entered"
 msgstr "Время наступило"
 
-#: src/models/prayer.rs:373
+#: src/models/prayer.rs:498
 msgid "<1 min"
 msgstr "<1 мин"
 
-#: src/models/prayer.rs:379
+#: src/models/prayer.rs:504
 msgid "%1 min"
 msgstr "%1 мин"
 
-#: src/models/prayer.rs:380
+#: src/models/prayer.rs:505
 msgid "%1 hr"
 msgstr "%1 ч"
 
-#: src/models/prayer.rs:381
+#: src/models/prayer.rs:506
 msgid "%1 hr %2 min"
 msgstr "%1 ч %2 мин"
 
-#: src/models/prayer.rs:388
+#: src/models/prayer.rs:513
 msgid "0m"
 msgstr "0м"
 
-#: src/models/prayer.rs:390
+#: src/models/prayer.rs:515
 msgid "<1m"
 msgstr "<1м"
 
-#: src/models/prayer.rs:396
+#: src/models/prayer.rs:521
 msgid "%1m"
 msgstr "%1м"
 
-#: src/models/prayer.rs:397
+#: src/models/prayer.rs:522
 msgid "%1h"
 msgstr "%1ч"
 
-#: src/models/prayer.rs:398
+#: src/models/prayer.rs:523
 msgid "%1h %2m"
 msgstr "%1ч %2м"
 
-#: src/providers/idamedya.rs:55
-msgid "IDA Medya provinces JSON: %1"
-msgstr "Ошибка JSON провинций IDA Medya: %1"
+#: src/providers/aladhan.rs:152
+msgid "AlAdhan times JSON: %1"
+msgstr "Ошибка JSON расписания AlAdhan: %1"
 
-#: src/providers/idamedya.rs:59 src/providers/idamedya.rs:81
-#: src/providers/idamedya.rs:110
-msgid "IDA Medya ok=false"
-msgstr "IDA Medya вернула ok=false"
+#: src/providers/aladhan.rs:156
+msgid "AlAdhan returned non-200 status"
+msgstr "AlAdhan вернул код ответа не 200"
 
-#: src/providers/idamedya.rs:77
-msgid "IDA Medya districts JSON: %1"
-msgstr "Ошибка JSON районов IDA Medya: %1"
+#: src/providers/aladhan.rs:164
+msgid "AlAdhan invalid date format: %1"
+msgstr "Некорректный формат даты AlAdhan: %1"
 
-#: src/providers/idamedya.rs:106
-msgid "IDA Medya times JSON: %1"
-msgstr "Ошибка JSON расписания IDA Medya: %1"
+#: src/providers/diyanet_mirror.rs:92
+msgid "%1 countries JSON: %2"
+msgstr "Ошибка JSON стран %1: %2"
 
-#: src/providers/idamedya.rs:115
-msgid "IDA Medya returned empty data"
-msgstr "IDA Medya вернула пустые данные"
+#: src/providers/diyanet_mirror.rs:112
+msgid "%1 cities JSON: %2"
+msgstr "Ошибка JSON городов %1: %2"
+
+#: src/providers/diyanet_mirror.rs:132
+msgid "%1 districts JSON: %2"
+msgstr "Ошибка JSON районов %1: %2"
+
+#: src/providers/diyanet_mirror.rs:163
+msgid "%1 times JSON: %2"
+msgstr "Ошибка JSON расписания %1: %2"
+
+#: src/providers/diyanet_mirror.rs:172
+msgid "%1 invalid date format: %2"
+msgstr "Некорректный формат даты %1: %2"
 
 #: src/providers/imsakiyem.rs:163
 msgid "Imsakiyem countries JSON: %1"
@@ -443,101 +527,85 @@ msgstr "Imsakiyem v1 вернул success=false"
 msgid "Imsakiyem v1 returned empty data"
 msgstr "Imsakiyem v1 вернул пустые данные"
 
-#: src/providers/mod.rs:37
+#: src/providers/mod.rs:42
 msgid "Rate limit exceeded (wait %1s)"
 msgstr "Превышен лимит запросов (ожидание %1 с)"
 
-#: src/providers/mod.rs:40
+#: src/providers/mod.rs:45
 msgid "Rate limit exceeded (429)"
 msgstr "Превышен лимит запросов (429)"
 
-#: src/providers/mod.rs:41
+#: src/providers/mod.rs:46
 msgid "Location not found (404)"
 msgstr "Местоположение не найдено (404)"
 
-#: src/providers/mod.rs:42
+#: src/providers/mod.rs:47
 msgid "Server error (HTTP %1)"
 msgstr "Ошибка сервера (HTTP %1)"
 
-#: src/providers/mod.rs:43
+#: src/providers/mod.rs:48
 msgid "Connection error: %1"
 msgstr "Ошибка подключения: %1"
 
-#: src/providers/mod.rs:44
+#: src/providers/mod.rs:49
 msgid "Invalid response: %1"
 msgstr "Некорректный ответ: %1"
 
-#: src/providers/mod.rs:254
+#: src/providers/mod.rs:207
+msgid "Unable to load country list"
+msgstr "Не удалось загрузить список стран"
+
+#: src/providers/mod.rs:266
 msgid "Unable to load city list"
 msgstr "Не удалось загрузить список городов"
 
-#: src/providers/mod.rs:322
+#: src/providers/mod.rs:345
 msgid "Unable to load district list"
 msgstr "Не удалось загрузить список районов"
 
-#: src/providers/mod.rs:352
+#: src/providers/mod.rs:372
 msgid "Turkey"
 msgstr "Турция"
 
-#: src/providers/mod.rs:375
+#: src/providers/mod.rs:394
 msgid "Location search is currently unavailable"
 msgstr "Поиск местоположений временно недоступен"
 
-#: src/providers/mod.rs:547 src/providers/mod.rs:579 src/providers/mod.rs:613
-msgid "mtopal rate limit pending"
-msgstr "ожидание сброса лимита mtopal"
+#: src/providers/mod.rs:560
+msgid "%1 rate limit pending"
+msgstr "ожидание сброса лимита %1"
 
-#: src/providers/mod.rs:558 src/providers/mod.rs:590 src/providers/mod.rs:624
-msgid "mtopal rate limit exceeded"
-msgstr "превышен лимит запросов mtopal"
+#: src/providers/mod.rs:571
+msgid "%1 rate limit exceeded"
+msgstr "превышен лимит запросов %1"
 
-#: src/providers/mod.rs:718
+#: src/providers/mod.rs:646
 msgid "%1: cooldown active"
 msgstr "%1: пауза после ограничения запросов"
 
-#: src/providers/mod.rs:752
+#: src/providers/mod.rs:708
 msgid "%1: missing today's (%2) prayer schedule"
 msgstr "%1: в ответе нет расписания на сегодня (%2)"
 
-#: src/providers/mod.rs:758
+#: src/providers/mod.rs:714
 msgid "%1: rate limit (429)"
 msgstr "%1: превышен лимит запросов (429)"
 
-#: src/providers/mod.rs:769 src/window.rs:248
+#: src/providers/mod.rs:725 src/window.rs:335
 msgid "Showing offline cache"
 msgstr "Показаны сохранённые автономные данные"
 
-#: src/providers/mod.rs:772
+#: src/providers/mod.rs:728
 msgid "Update failed (%1); showing cached schedule"
 msgstr "Ошибка обновления (%1), показаны сохранённые данные"
 
-#: src/providers/mod.rs:784
+#: src/providers/mod.rs:740
 msgid "No verified provider is available for the selected location."
 msgstr "Для выбранного места нет подтверждённого источника данных."
 
-#: src/providers/mod.rs:786
+#: src/providers/mod.rs:742
 msgid "All sources failed: %1"
 msgstr "Все источники недоступны: %1"
-
-#: src/providers/mtopal.rs:65
-msgid "mtopal countries JSON: %1"
-msgstr "Ошибка JSON стран mtopal: %1"
-
-#: src/providers/mtopal.rs:79
-msgid "mtopal cities JSON: %1"
-msgstr "Ошибка JSON городов mtopal: %1"
-
-#: src/providers/mtopal.rs:93
-msgid "mtopal districts JSON: %1"
-msgstr "Ошибка JSON районов mtopal: %1"
-
-#: src/providers/mtopal.rs:115
-msgid "mtopal times JSON: %1"
-msgstr "Ошибка JSON расписания mtopal: %1"
-
-#: src/providers/mtopal.rs:121
-msgid "mtopal invalid date format: %1"
-msgstr "Некорректный формат даты mtopal: %1"
 
 #: src/services/portal.rs:29
 msgid "Background portal request failed: %1"
@@ -579,7 +647,7 @@ msgstr ""
 "%1\n"
 "Сейчас: %2 • %3"
 
-#: src/services/tray.rs:94 src/window.rs:267
+#: src/services/tray.rs:94 src/window.rs:356
 msgid "Now: %1"
 msgstr "Сейчас: %1"
 
@@ -587,35 +655,35 @@ msgstr "Сейчас: %1"
 msgid "Prayer Times — %1"
 msgstr "Время намаза — %1"
 
-#: src/services/tray.rs:120 src/window.ui:126
+#: src/services/tray.rs:120 src/window.ui:127
 msgid "Fetching prayer times…"
 msgstr "Загрузка расписания намаза…"
 
-#: src/services/tray.rs:345
+#: src/services/tray.rs:348
 msgid "Maghrib 12h 59m"
 msgstr "Магриб 12ч 59м"
 
-#: src/services/tray.rs:568
+#: src/services/tray.rs:588
 msgid "  (Next)"
 msgstr "  (Следующий)"
 
-#: src/services/tray.rs:570
+#: src/services/tray.rs:590
 msgid "  (Now)"
 msgstr "  (Сейчас)"
 
-#: src/services/tray.rs:587
+#: src/services/tray.rs:613
 msgid "Show Window"
 msgstr "Показать окно"
 
-#: src/services/tray.rs:588 src/shortcuts-dialog.ui:15
+#: src/services/tray.rs:617 src/shortcuts-dialog.ui:15
 msgid "Refresh Times"
 msgstr "Обновить расписание"
 
-#: src/services/tray.rs:589 src/shortcuts-dialog.ui:21 src/ui/preferences.rs:16
+#: src/services/tray.rs:621 src/shortcuts-dialog.ui:21 src/ui/preferences.rs:16
 msgid "Preferences"
 msgstr "Параметры"
 
-#: src/services/tray.rs:590 src/shortcuts-dialog.ui:33
+#: src/services/tray.rs:625 src/shortcuts-dialog.ui:33
 msgid "Quit"
 msgstr "Выход"
 
@@ -624,8 +692,8 @@ msgid "General"
 msgstr "Общие"
 
 #: src/shortcuts-dialog.ui:9 src/ui/location_dialog.rs:21
-#: src/ui/location_dialog.rs:125 src/window.rs:182 src/window.ui:32
-#: src/window.ui:96
+#: src/ui/location_dialog.rs:125 src/window.rs:260 src/window.ui:33
+#: src/window.ui:97
 msgid "Choose Location"
 msgstr "Выбрать место"
 
@@ -673,175 +741,195 @@ msgstr "Загрузка районов…"
 msgid "Location and Data Source"
 msgstr "Местоположение и источник данных"
 
-#: src/ui/preferences.rs:39
+#: src/ui/preferences.rs:42
 msgid "None"
 msgstr "Нет"
 
-#: src/ui/preferences.rs:45
+#: src/ui/preferences.rs:48
 msgid "Time zone: %1 • Providers: %2"
 msgstr "Часовой пояс: %1 • Источники: %2"
 
-#: src/ui/preferences.rs:49
+#: src/ui/preferences.rs:52
 msgid "No location selected"
 msgstr "Место не выбрано"
 
-#: src/ui/preferences.rs:50
+#: src/ui/preferences.rs:53
 msgid "Please choose a city or district"
 msgstr "Выберите город или район"
 
-#: src/ui/preferences.rs:59
+#: src/ui/preferences.rs:62
 msgid "Change"
 msgstr "Изменить"
 
-#: src/ui/preferences.rs:72
+#: src/ui/preferences.rs:75
 msgid "Automatic (Recommended)"
 msgstr "Автоматически (рекомендуется)"
 
-#: src/ui/preferences.rs:74
-msgid "IDA Medya (Turkey Only)"
-msgstr "IDA Medya (только для Турции)"
-
-#: src/ui/preferences.rs:82
+#: src/ui/preferences.rs:87
 msgid "Preferred data source"
 msgstr "Предпочтительный источник данных"
 
-#: src/ui/preferences.rs:83
+#: src/ui/preferences.rs:88
 msgid "Falls back to verified secondary providers if the primary source fails"
 msgstr ""
 "При сбое основного источника автоматически используются резервные провайдеры"
 
-#: src/ui/preferences.rs:99
+#: src/ui/preferences.rs:105
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: src/ui/preferences.rs:113
+msgid "Interface theme"
+msgstr "Тема интерфейса"
+
+#: src/ui/preferences.rs:114
+msgid "Choose between visual scenes, clean colorful icons, or monochrome grey"
+msgstr "Выберите иллюстрации, чистые карточки с цветными значками или серый минимализм"
+
+#: src/ui/preferences.rs:127
+msgid "Hero Card Scene"
+msgstr "Сцена главной карточки"
+
+#: src/ui/preferences.rs:128
+msgid "Choose the 3D mosque scene or dynamic sky for the countdown card"
+msgstr "Выберите 3D-вид мечети или динамическое небо для карточки отсчёта"
+
+#: src/ui/preferences.rs:140
+msgid "Color each prayer icon to match its time of day"
+msgstr "Окрашивать каждый значок намаза в соответствии со временем суток"
+
+#: src/ui/preferences.rs:152
 msgid "GNOME Top Bar & Countdown"
 msgstr "Верхняя панель GNOME и таймер"
 
-#: src/ui/preferences.rs:103
+#: src/ui/preferences.rs:156
 msgid "Show remaining time in top bar"
 msgstr "Показывать оставшееся время на верхней панели"
 
-#: src/ui/preferences.rs:104
+#: src/ui/preferences.rs:157
 msgid "Display remaining time beside the tray icon in the GNOME top panel"
 msgstr "Отображать оставшееся время рядом со значком на верхней панели GNOME"
 
-#: src/ui/preferences.rs:108
+#: src/ui/preferences.rs:161
 msgid "Prayer + Time (e.g. Asr 42m)"
 msgstr "Намаз + время (напр., Аср 42м)"
 
-#: src/ui/preferences.rs:109
+#: src/ui/preferences.rs:162
 msgid "Time Only (e.g. 42m)"
 msgstr "Только время (напр., 42м)"
 
-#: src/ui/preferences.rs:112
+#: src/ui/preferences.rs:165
 msgid "Panel label format"
 msgstr "Формат текста на панели"
 
-#: src/ui/preferences.rs:122
+#: src/ui/preferences.rs:175
 msgid "Show seconds in main window"
 msgstr "Показывать секунды в главном окне"
 
-#: src/ui/preferences.rs:123
+#: src/ui/preferences.rs:176
 msgid "Display the countdown in HH:MM:SS or HH:MM format"
 msgstr "Отображать таймер в формате ЧЧ:ММ:СС или ЧЧ:ММ"
 
-#: src/ui/preferences.rs:134
+#: src/ui/preferences.rs:187
 msgid "Background Behavior"
 msgstr "Фоновый режим"
 
-#: src/ui/preferences.rs:138
+#: src/ui/preferences.rs:191
 msgid "Keep running in background on close"
 msgstr "Продолжать работу в фоне при закрытии"
 
-#: src/ui/preferences.rs:139
+#: src/ui/preferences.rs:192
 msgid "Keep the tray icon and countdown active when the window is hidden"
 msgstr ""
 "Сохранять активность значка в трее и обратного отсчёта при скрытии окна"
 
-#: src/ui/preferences.rs:144
+#: src/ui/preferences.rs:197
 msgid "Start automatically on login"
 msgstr "Автозапуск при входе в систему"
 
-#: src/ui/preferences.rs:145
+#: src/ui/preferences.rs:198
 msgid ""
 "Launch in the background at login using the Flatpak XDG Background Portal"
 msgstr "Запускать приложение в фоне при входе через Flatpak Background Portal"
 
-#: src/ui/preferences.rs:155
+#: src/ui/preferences.rs:208
 msgid "Language"
 msgstr "Язык"
 
-#: src/ui/preferences.rs:158
+#: src/ui/preferences.rs:211
 msgid "System Default"
 msgstr "Системный язык"
 
-#: src/ui/preferences.rs:167
+#: src/ui/preferences.rs:220
 msgid "Restart required to apply language changes"
 msgstr "Для применения выбранного языка требуется перезапуск"
 
-#: src/ui/preferences.rs:295
+#: src/ui/preferences.rs:386
 msgid "Restart the app to apply the language change"
 msgstr "Перезапустите приложение, чтобы применить язык"
 
-#: src/ui/preferences.rs:296
+#: src/ui/preferences.rs:387
 msgid "Restart"
 msgstr "Перезапустить"
 
-#: src/window.rs:272
+#: src/window.rs:361
 msgid "Time until tomorrow's %1 (%2)"
 msgstr "Завтра %1 (%2) — осталось"
 
-#: src/window.rs:277
+#: src/window.rs:366
 msgid "Time until %1 (%2)"
 msgstr "%1 (%2) — осталось"
 
-#: src/window.rs:300
+#: src/window.rs:389
 msgid "Waiting for tomorrow's Fajr time"
 msgstr "Ожидание завтрашнего времени Фаджр"
 
-#: src/window.rs:303
+#: src/window.rs:392
 msgid "Countdown resumes once tomorrow's schedule is refreshed"
 msgstr "Отсчёт продолжится после обновления расписания на завтра"
 
-#: src/window.rs:308
+#: src/window.rs:397
 msgid "Time zone: %1"
 msgstr "Часовой пояс: %1"
 
-#: src/window.rs:327
+#: src/window.rs:416
 msgid "Now"
 msgstr "Сейчас"
 
-#: src/window.rs:332
+#: src/window.rs:421
 msgid "Next"
 msgstr "Следующий"
 
-#: src/window.rs:343
+#: src/window.rs:432
 msgid "Source: %1"
 msgstr "Источник: %1"
 
-#: src/window.ui:17
+#: src/window.ui:18
 msgid "Change location"
 msgstr "Изменить место"
 
-#: src/window.ui:53
+#: src/window.ui:54
 msgid "Main Menu"
 msgstr "Главное меню"
 
-#: src/window.ui:60
+#: src/window.ui:61
 msgid "Refresh prayer times"
 msgstr "Обновить расписание"
 
-#: src/window.ui:78
+#: src/window.ui:79
 msgid ""
 "The AppIndicator extension is not enabled for the GNOME top-bar tray icon."
 msgstr "Расширение AppIndicator для значка на верхней панели GNOME не активно."
 
-#: src/window.ui:79
+#: src/window.ui:80
 msgid "Dismiss"
 msgstr "Закрыть"
 
-#: src/window.ui:92
+#: src/window.ui:93
 msgid "Choose Your Location"
 msgstr "Выберите местоположение"
 
-#: src/window.ui:93
+#: src/window.ui:94
 msgid ""
 "Select a city or district to view prayer times, live countdown, and system "
 "tray status."
@@ -849,37 +937,70 @@ msgstr ""
 "Выберите город или район, чтобы видеть расписание намаза, обратный отсчёт и "
 "статус в трее."
 
-#: src/window.ui:142
+#: src/window.ui:143
 msgid "Unable to Load Prayer Times"
 msgstr "Не удалось загрузить расписание"
 
-#: src/window.ui:143
+#: src/window.ui:144
 msgid "Check your internet connection and try again."
 msgstr "Проверьте подключение к сети и попробуйте снова."
 
-#: src/window.ui:150
+#: src/window.ui:151
 msgid "Retry"
 msgstr "Повторить"
 
-#: src/window.ui:159
+#: src/window.ui:160
 msgid "Change Location"
 msgstr "Сменить место"
 
-#: src/window.ui:320
+#: src/window.ui:369
 msgid "_Preferences"
 msgstr "_Параметры"
 
-#: src/window.ui:324
+#: src/window.ui:373
 msgid "_Keyboard Shortcuts"
 msgstr "_Комбинации клавиш"
 
-#: src/window.ui:328
+#: src/window.ui:377
 msgid "_About Prayer Times"
 msgstr "_О приложении"
 
-#: src/window.ui:334
+#: src/window.ui:383
 msgid "_Quit"
 msgstr "_Выход"
+
+#~ msgid "3D isometric • Six minarets"
+#~ msgstr "3D изометрия • Шесть минаретов"
+
+#~ msgid "3D isometric • Historic dome"
+#~ msgstr "3D изометрия • Исторический купол"
+
+#~ msgid "3D isometric • Cascading domes"
+#~ msgstr "3D изометрия • Каскадные купола"
+
+#~ msgid "Dynamic prayer-time sky"
+#~ msgstr "Небо по времени намаза"
+
+#~ msgid "IDA Medya Prayer Times API (Turkey / Diyanet data)"
+#~ msgstr "IDA Medya Prayer Times API (Турция / данные Диянета)"
+
+#~ msgid "IDA Medya"
+#~ msgstr "IDA Medya"
+
+#~ msgid "IDA Medya provinces JSON: %1"
+#~ msgstr "Ошибка JSON провинций IDA Medya: %1"
+
+#~ msgid "IDA Medya ok=false"
+#~ msgstr "IDA Medya вернула ok=false"
+
+#~ msgid "IDA Medya districts JSON: %1"
+#~ msgstr "Ошибка JSON районов IDA Medya: %1"
+
+#~ msgid "IDA Medya returned empty data"
+#~ msgstr "IDA Medya вернула пустые данные"
+
+#~ msgid "IDA Medya (Turkey Only)"
+#~ msgstr "IDA Medya (только для Турции)"
 
 #~ msgid ""
 #~ "Display prayer times and live countdown in the background and system tray"

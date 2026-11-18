@@ -46,10 +46,11 @@ A native prayer times and system tray (AppIndicator) application for the GNOME d
   - A single click on the tray icon shows a menu with location summary, remaining time, all six prayer times, and quick actions (**Show Application**, **Refresh Times**, **Preferences**, **Quit**).
   - Optionally display the remaining time next to the tray icon in the GNOME top bar (`Prayer + Time` or `Time Only`), configurable from Preferences.
 - **Background Operation & Autostart:** When the window is closed the app continues running in the system tray; it can be set to launch automatically at login via the XDG Background Portal.
-- **3-Stage Validated Data Sources & Local Cache:**
-  1. **İmsakiyem API** (primary; Turkey and worldwide)
-  2. **mtopal Ezan Vakti v1.5** (fallback; Turkey and worldwide, local calculation with IANA time zones)
-  3. **İDA Medya** (secondary fallback; Turkey only)
+- **4-Stage Validated Data Sources & Local Cache:**
+  1. **İmsakiyem API** (primary; Turkey and worldwide, open source)
+  2. **mtopal Ezan Vakti v1.5** (fallback; Turkey and worldwide, Diyanet schedule)
+  3. **EzanVakti API (`emushaf.net`)** (secondary Diyanet fallback; 202 countries, open source)
+  4. **AlAdhan API (Method 13)** (independent global fallback via coordinates/city using Diyanet calculation angles)
   - On failed requests, the app validates city/district names and falls through to the next source. When offline, it continues operating from the local XDG cache (`~/.cache/io.github.bykemalh.namaz_time.NamazTime`).
 
 ## System Requirements
@@ -128,6 +129,7 @@ git push origin v0.1.0
 
 ## Data Sources
 
-- [İmsakiyem API](https://ezanvakti.imsakiyem.com) (Diyanet data)
-- [mtopal Ezan Vakti API v1.5](https://ezanvakti.emushaf.net) (Diyanet data)
-- [İDA Medya Namaz Vakti API](https://api.idamedya.com) (Turkey / Diyanet data)
+- [İmsakiyem API](https://ezanvakti.imsakiyem.com) ([Open-source repository](https://github.com/karademirmustafa/ezanvakti-imsakiyem-api) — Diyanet data)
+- [mtopal Ezan Vakti API v1.5](https://namazvakti.mtopal.dev) (Diyanet data)
+- [EzanVakti API (`emushaf.net`)](https://ezanvakti.emushaf.net) ([Open-source repository](https://github.com/furkantektas/EzanVaktiAPI) — Diyanet data)
+- [AlAdhan Prayer Times API](https://api.aladhan.com) (Diyanet Method 13 fallback)

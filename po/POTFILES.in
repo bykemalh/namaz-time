@@ -6,10 +6,10 @@ data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in
 src/application.rs
 src/i18n.rs
 src/models/prayer.rs
-src/providers/idamedya.rs
+src/providers/aladhan.rs
+src/providers/diyanet_mirror.rs
 src/providers/imsakiyem.rs
 src/providers/mod.rs
-src/providers/mtopal.rs
 src/services/portal.rs
 src/services/scheduler.rs
 src/services/tray.rs

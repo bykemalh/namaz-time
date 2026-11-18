@@ -46,10 +46,11 @@ GNOME masaüstü ortamı için **GTK4**, **Libadwaita** ve **Rust** ile gelişti
   - Tepsi ikonuna tek tıklandığında konum özeti, kalan süre, tüm 6 vakit ve hızlı işlemler (**Uygulamayı Göster**, **Vakitleri Yenile**, **Tercihler**, **Çıkış**) menüde görünür.
   - GNOME üst çubuğunda ikonun yanında kalan süreyi gösterme (`Vakit + Süre` veya `Yalnızca Süre`) Tercihler'den açılıp kapatılabilir.
 - **Arka Planda Çalışma & Otomatik Başlatma:** Pencere kapatıldığında uygulama tepside arka planda çalışmaya devam eder; oturum açılışında XDG Background Portalı ile otomatik başlatılabilir.
-- **3 Aşamalı Doğrulamalı Diyanet Veri Kaynağı & Yerel Önbellek:**
-  1. **İmsakiyem API** (birincil; Türkiye ve dünya geneli)
-  2. **mtopal Ezan Vakti v1.5** (yedek; Türkiye ve dünya geneli, IANA saat dilimiyle yerel hesaplama)
-  3. **İDA Medya** (ek yedek; yalnızca Türkiye)
+- **4 Aşamalı Doğrulamalı Veri Kaynağı & Yerel Önbellek:**
+  1. **İmsakiyem API** (birincil; Türkiye ve dünya geneli, açık kaynak)
+  2. **mtopal Ezan Vakti v1.5** (yedek; Türkiye ve dünya geneli, Diyanet verisi)
+  3. **EzanVakti API (`emushaf.net`)** (ek Diyanet yedeği; 202 ülke, açık kaynak)
+  4. **AlAdhan API (Method 13)** (bağımsız küresel son çare yedek; koordinat/şehir üzerinden Diyanet hesaplama açıları)
   - Başarısız isteklerde isim/ilçe doğrulamasıyla sıradaki kaynağa geçer, bağlantı olmadığında yerel XDG önbellekten (`~/.cache/io.github.bykemalh.namaz_time.NamazTime`) çalışmayı sürdürür.
 
 ## Sistem Gereksinimleri
@@ -128,6 +129,7 @@ git push origin v0.1.0
 
 ## Veri Kaynakları
 
-- [İmsakiyem API](https://ezanvakti.imsakiyem.com) (Diyanet verisi)
-- [mtopal Ezan Vakti API v1.5](https://ezanvakti.emushaf.net) (Diyanet verisi)
-- [İDA Medya Namaz Vakti API](https://api.idamedya.com) (Türkiye / Diyanet verisi)
+- [İmsakiyem API](https://ezanvakti.imsakiyem.com) ([Açık kaynak depo](https://github.com/karademirmustafa/ezanvakti-imsakiyem-api) — Diyanet verisi)
+- [mtopal Ezan Vakti API v1.5](https://namazvakti.mtopal.dev) (Diyanet verisi)
+- [EzanVakti API (`emushaf.net`)](https://ezanvakti.emushaf.net) ([Açık kaynak depo](https://github.com/furkantektas/EzanVaktiAPI) — Diyanet verisi)
+- [AlAdhan Prayer Times API](https://api.aladhan.com) (Diyanet Method 13 yedeği)
