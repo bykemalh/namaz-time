@@ -206,14 +206,28 @@ pub enum HeroTheme {
     Sultanahmet,
     Ayasofya,
     Suleymaniye,
+    Ulucami,
+    Camlica,
+    Beyazit,
+    Selimiye,
+    Ortakoy,
+    Nabawi,
+    Haram,
     Classic,
 }
 
 impl HeroTheme {
-    pub const ALL: [Self; 4] = [
+    pub const ALL: [Self; 11] = [
         Self::Sultanahmet,
         Self::Ayasofya,
         Self::Suleymaniye,
+        Self::Ulucami,
+        Self::Camlica,
+        Self::Beyazit,
+        Self::Selimiye,
+        Self::Ortakoy,
+        Self::Nabawi,
+        Self::Haram,
         Self::Classic,
     ];
 
@@ -222,6 +236,13 @@ impl HeroTheme {
             Self::Sultanahmet => "sultanahmet",
             Self::Ayasofya => "ayasofya",
             Self::Suleymaniye => "suleymaniye",
+            Self::Ulucami => "ulucami",
+            Self::Camlica => "camlica",
+            Self::Beyazit => "beyazit",
+            Self::Selimiye => "selimiye",
+            Self::Ortakoy => "ortakoy",
+            Self::Nabawi => "nabawi",
+            Self::Haram => "haram",
             Self::Classic => "classic",
         }
     }
@@ -230,6 +251,13 @@ impl HeroTheme {
         match s.trim().to_ascii_lowercase().as_str() {
             "ayasofya" => Self::Ayasofya,
             "suleymaniye" => Self::Suleymaniye,
+            "ulucami" => Self::Ulucami,
+            "camlica" => Self::Camlica,
+            "beyazit" => Self::Beyazit,
+            "selimiye" => Self::Selimiye,
+            "ortakoy" => Self::Ortakoy,
+            "nabawi" => Self::Nabawi,
+            "haram" => Self::Haram,
             "classic" => Self::Classic,
             _ => Self::Sultanahmet,
         }
@@ -240,18 +268,26 @@ impl HeroTheme {
             Self::Sultanahmet => tr("Sultanahmet Mosque"),
             Self::Ayasofya => tr("Hagia Sophia"),
             Self::Suleymaniye => tr("Süleymaniye Mosque"),
+            Self::Ulucami => tr("Bursa Grand Mosque (Ulu Camii)"),
+            Self::Camlica => tr("Çamlıca Mosque"),
+            Self::Beyazit => tr("Bayezid Mosque (Beyazıt)"),
+            Self::Selimiye => tr("Selimiye Mosque"),
+            Self::Ortakoy => tr("Ortaköy Mosque"),
+            Self::Nabawi => tr("Al-Masjid an-Nabawi"),
+            Self::Haram => tr("Al-Masjid al-Haram"),
             Self::Classic => tr("Classic Sky"),
         }
     }
 
     pub fn hero_resource(self, current_prayer: PrayerName) -> String {
         match self {
-            Self::Sultanahmet => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-sultanahmet.jpg".to_string(),
-            Self::Ayasofya => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-ayasofya.jpg".to_string(),
-            Self::Suleymaniye => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-suleymaniye.jpg".to_string(),
             Self::Classic => format!(
                 "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/prayer-{}-hero.svg",
                 current_prayer.css_key()
+            ),
+            photo => format!(
+                "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-{}.jpg",
+                photo.id()
             ),
         }
     }
@@ -755,14 +791,17 @@ mod tests {
 
     #[test]
     fn hero_themes_and_ui_styles_roundtrip() {
-        assert_eq!(HeroTheme::from_id("sultanahmet"), HeroTheme::Sultanahmet);
-        assert_eq!(HeroTheme::from_id("ayasofya"), HeroTheme::Ayasofya);
-        assert_eq!(HeroTheme::from_id("suleymaniye"), HeroTheme::Suleymaniye);
-        assert_eq!(HeroTheme::from_id("classic"), HeroTheme::Classic);
+        for theme in HeroTheme::ALL {
+            assert_eq!(HeroTheme::from_id(theme.id()), theme);
+            let res = theme.hero_resource(PrayerName::Yatsi);
+            if theme == HeroTheme::Classic {
+                assert!(res.ends_with("prayer-yatsi-hero.svg"));
+            } else {
+                assert!(res.ends_with(&format!("mosque-{}.jpg", theme.id())));
+            }
+        }
+        assert_eq!(HeroTheme::ALL.len(), 11);
         assert_eq!(HeroTheme::from_id("unknown"), HeroTheme::Sultanahmet);
-
-        assert!(HeroTheme::Sultanahmet.hero_resource(PrayerName::Yatsi).ends_with("mosque-sultanahmet.jpg"));
-        assert!(HeroTheme::Classic.hero_resource(PrayerName::Ogle).ends_with("prayer-ogle-hero.svg"));
 
         assert_eq!(UiStyle::from_id("illustrated"), UiStyle::Illustrated);
         assert_eq!(UiStyle::from_id("colorful"), UiStyle::Colorful);

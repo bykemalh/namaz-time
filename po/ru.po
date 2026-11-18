@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: namaz-time 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-19 01:16+0300\n"
+"POT-Creation-Date: 2026-11-19 01:40+0300\n"
 "PO-Revision-Date: 2026-11-16 01:15+0300\n"
 "Last-Translator: Kemal (@bykemalh)\n"
 "Language-Team: Russian\n"
@@ -112,10 +112,9 @@ msgstr "Фоновая тема главной карточки"
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:47
 msgid ""
-"Selected hero card scene: sultanahmet, ayasofya, suleymaniye, or classic."
-msgstr ""
-"Выбранная сцена главной карточки: sultanahmet, ayasofya, suleymaniye или "
-"classic."
+"Selected hero card scene: sultanahmet, ayasofya, suleymaniye, ulucami, "
+"camlica, beyazit, selimiye, ortakoy, nabawi, haram, or classic."
+msgstr "Выбранная сцена главной карточки: sultanahmet, ayasofya, suleymaniye, ulucami, camlica, beyazit, selimiye, ortakoy, nabawi, haram или classic."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.gschema.xml:51
 msgid "Interface visual style"
@@ -134,7 +133,8 @@ msgstr "Цветные значки намазов"
 msgid ""
 "Tint each prayer icon with its time-of-day accent color when not in minimal "
 "mode."
-msgstr "Окрашивать каждый значок намаза в цвет времени суток вне минимального режима."
+msgstr ""
+"Окрашивать каждый значок намаза в цвет времени суток вне минимального режима."
 
 #: data/io.github.bykemalh.namaz_time.NamazTime.metainfo.xml.in:8
 msgid "Live prayer time countdown"
@@ -355,79 +355,107 @@ msgstr "Некорректное время (%1)"
 msgid "Time zone error: %1"
 msgstr "Ошибка часового пояса: %1"
 
-#: src/models/prayer.rs:240
+#: src/models/prayer.rs:268
 msgid "Sultanahmet Mosque"
 msgstr "Мечеть Султанахмет"
 
-#: src/models/prayer.rs:241
+#: src/models/prayer.rs:269
 msgid "Hagia Sophia"
 msgstr "Айя-София"
 
-#: src/models/prayer.rs:242
+#: src/models/prayer.rs:270
 msgid "Süleymaniye Mosque"
 msgstr "Мечеть Сулеймание"
 
-#: src/models/prayer.rs:243
+#: src/models/prayer.rs:271
+msgid "Bursa Grand Mosque (Ulu Camii)"
+msgstr "Большая мечеть Бурсы (Улу-Джами)"
+
+#: src/models/prayer.rs:272
+msgid "Çamlıca Mosque"
+msgstr "Мечеть Чамлыджа"
+
+#: src/models/prayer.rs:273
+msgid "Bayezid Mosque (Beyazıt)"
+msgstr "Мечеть Баязид"
+
+#: src/models/prayer.rs:274
+msgid "Selimiye Mosque"
+msgstr "Мечеть Селимие (Эдирне)"
+
+#: src/models/prayer.rs:275
+msgid "Ortaköy Mosque"
+msgstr "Мечеть Ортакёй"
+
+#: src/models/prayer.rs:276
+msgid "Al-Masjid an-Nabawi"
+msgstr "Мечеть Пророка (Медина)"
+
+#: src/models/prayer.rs:277
+msgid "Al-Masjid al-Haram"
+msgstr "Заповедная мечеть (Кааба)"
+
+#: src/models/prayer.rs:278
 msgid "Classic Sky"
 msgstr "Классическое небо"
 
-#: src/models/prayer.rs:289
+#: src/models/prayer.rs:325
 msgid "Illustrated (Mosque & Scenes)"
 msgstr "С иллюстрациями (мечети и сцены)"
 
-#: src/models/prayer.rs:290
+#: src/models/prayer.rs:326
 msgid "Colorful Icons (Clean Cards)"
 msgstr "Цветные значки (чистые карточки)"
 
-#: src/models/prayer.rs:291
+#: src/models/prayer.rs:327
 msgid "Minimal (Monochrome Grey)"
 msgstr "Минималистичный (серый монохром)"
 
-#: src/models/prayer.rs:358
+#: src/models/prayer.rs:394
 msgid "Invalid time zone (%1): %2"
 msgstr "Некорректный часовой пояс (%1): %2"
 
-#: src/models/prayer.rs:366
+#: src/models/prayer.rs:402
 msgid "No prayer schedule found for today (%1)"
 msgstr "Расписание на сегодня (%1) не найдено"
 
-#: src/models/prayer.rs:495
+#: src/models/prayer.rs:531
 msgid "Time entered"
 msgstr "Время наступило"
 
-#: src/models/prayer.rs:498
+#: src/models/prayer.rs:534
 msgid "<1 min"
 msgstr "<1 мин"
 
-#: src/models/prayer.rs:504
+#: src/models/prayer.rs:540
 msgid "%1 min"
 msgstr "%1 мин"
 
-#: src/models/prayer.rs:505
+#: src/models/prayer.rs:541
 msgid "%1 hr"
 msgstr "%1 ч"
 
-#: src/models/prayer.rs:506
+#: src/models/prayer.rs:542
 msgid "%1 hr %2 min"
 msgstr "%1 ч %2 мин"
 
-#: src/models/prayer.rs:513
+#: src/models/prayer.rs:549
 msgid "0m"
 msgstr "0м"
 
-#: src/models/prayer.rs:515
+#: src/models/prayer.rs:551
 msgid "<1m"
 msgstr "<1м"
 
-#: src/models/prayer.rs:521
+#: src/models/prayer.rs:557
 msgid "%1m"
 msgstr "%1м"
 
-#: src/models/prayer.rs:522
+#: src/models/prayer.rs:558
 msgid "%1h"
 msgstr "%1ч"
 
-#: src/models/prayer.rs:523
+#: src/models/prayer.rs:559
 msgid "%1h %2m"
 msgstr "%1ч %2м"
 
@@ -784,7 +812,9 @@ msgstr "Тема интерфейса"
 
 #: src/ui/preferences.rs:114
 msgid "Choose between visual scenes, clean colorful icons, or monochrome grey"
-msgstr "Выберите иллюстрации, чистые карточки с цветными значками или серый минимализм"
+msgstr ""
+"Выберите иллюстрации, чистые карточки с цветными значками или серый "
+"минимализм"
 
 #: src/ui/preferences.rs:127
 msgid "Hero Card Scene"

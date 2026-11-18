@@ -44,7 +44,7 @@
     <key name="hero-theme" type="s">
       <default>"sultanahmet"</default>
       <summary>Hero card background theme</summary>
-      <description>Selected hero card scene: sultanahmet, ayasofya, suleymaniye, or classic.</description>
+      <description>Selected hero card scene: sultanahmet, ayasofya, suleymaniye, ulucami, camlica, beyazit, selimiye, ortakoy, nabawi, haram, or classic.</description>
     </key>
     <key name="ui-style" type="s">
       <default>"illustrated"</default>

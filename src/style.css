@@ -102,6 +102,55 @@ list.prayers-list > row.prayer-row {
   background-image: linear-gradient(90deg, #0b1b20 0%, rgba(11, 27, 32, 0.0) 28%);
 }
 
+.ui-style-illustrated .hero-theme-ulucami {
+  background-color: #0d2027;
+}
+.ui-style-illustrated .hero-theme-ulucami .hero-media-fade {
+  background-image: linear-gradient(90deg, #0d2027 0%, rgba(13, 32, 39, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-camlica {
+  background-color: #0f1a21;
+}
+.ui-style-illustrated .hero-theme-camlica .hero-media-fade {
+  background-image: linear-gradient(90deg, #0f1a21 0%, rgba(15, 26, 33, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-beyazit {
+  background-color: #111a24;
+}
+.ui-style-illustrated .hero-theme-beyazit .hero-media-fade {
+  background-image: linear-gradient(90deg, #111a24 0%, rgba(17, 26, 36, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-selimiye {
+  background-color: #16201e;
+}
+.ui-style-illustrated .hero-theme-selimiye .hero-media-fade {
+  background-image: linear-gradient(90deg, #16201e 0%, rgba(22, 32, 30, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-ortakoy {
+  background-color: #041f2a;
+}
+.ui-style-illustrated .hero-theme-ortakoy .hero-media-fade {
+  background-image: linear-gradient(90deg, #041f2a 0%, rgba(4, 31, 42, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-nabawi {
+  background-color: #0c1c1c;
+}
+.ui-style-illustrated .hero-theme-nabawi .hero-media-fade {
+  background-image: linear-gradient(90deg, #0c1c1c 0%, rgba(12, 28, 28, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-haram {
+  background-color: #091216;
+}
+.ui-style-illustrated .hero-theme-haram .hero-media-fade {
+  background-image: linear-gradient(90deg, #091216 0%, rgba(9, 18, 22, 0.0) 28%);
+}
+
 .ui-style-illustrated .hero-theme-classic {
   background-color: #0c1922;
 }
