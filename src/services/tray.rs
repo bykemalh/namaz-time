@@ -179,6 +179,7 @@ struct SharedTrayState {
     view: TrayViewState,
     revision: u32,
     pixmaps: Vec<SniPixmap>,
+    prayer_icons: HashMap<PrayerName, Vec<u8>>,
 }
 
 #[derive(Clone)]
@@ -208,11 +209,13 @@ pub fn spawn_tray_service(
         render_crescent_pixmap(32),
         render_crescent_pixmap(48),
     ];
+    let prayer_icons = render_prayer_menu_icons();
 
     let state = Arc::new(RwLock::new(SharedTrayState {
         view: TrayViewState::default(),
         revision: 1,
         pixmaps,
+        prayer_icons,
     }));
 
     let (update_tx, update_rx) = mpsc::unbounded_channel();
@@ -406,7 +409,7 @@ impl DbusMenuInterface {
         let children = if recursion_depth == 0 {
             Vec::new()
         } else {
-            build_menu_items(&guard.view)
+            build_menu_items(&guard.view, &guard.prayer_icons)
                 .into_iter()
                 .map(|(id, props)| {
                     let filtered = filter_props(props, &property_names);
@@ -441,7 +444,7 @@ impl DbusMenuInterface {
         property_names: Vec<String>,
     ) -> fdo::Result<Vec<(i32, HashMap<Cow<'static, str>, OwnedVariant>)>> {
         let guard = self.state.read().expect("tray lock poisoned");
-        let items = build_menu_items(&guard.view);
+        let items = build_menu_items(&guard.view, &guard.prayer_icons);
         let result = items
             .into_iter()
             .filter(|(id, _)| ids.is_empty() || ids.contains(id))
@@ -452,7 +455,7 @@ impl DbusMenuInterface {
 
     async fn get_property(&self, id: i32, name: String) -> fdo::Result<OwnedVariant> {
         let guard = self.state.read().expect("tray lock poisoned");
-        let items = build_menu_items(&guard.view);
+        let items = build_menu_items(&guard.view, &guard.prayer_icons);
         let (_, props) = items
             .into_iter()
             .find(|(item_id, _)| *item_id == id)
@@ -534,12 +537,27 @@ fn i32_prop(v: i32) -> OwnedVariant {
     OwnedVariant::from(v)
 }
 
+fn bytes_prop(bytes: &[u8]) -> OwnedVariant {
+    let arr = zbus::Array::from(bytes);
+    OwnedVariant::try_from(Variant::Array(arr)).expect("byte array OwnedVariant")
+}
+
 fn standard_item(label: &str, enabled: bool) -> HashMap<Cow<'static, str>, OwnedVariant> {
     let mut props = HashMap::new();
     props.insert(Cow::Borrowed("type"), str_prop("standard"));
     props.insert(Cow::Borrowed("label"), str_prop(label));
     props.insert(Cow::Borrowed("enabled"), bool_prop(enabled));
     props.insert(Cow::Borrowed("visible"), bool_prop(true));
+    props
+}
+
+fn icon_item(
+    label: &str,
+    icon_name: &str,
+    enabled: bool,
+) -> HashMap<Cow<'static, str>, OwnedVariant> {
+    let mut props = standard_item(label, enabled);
+    props.insert(Cow::Borrowed("icon-name"), str_prop(icon_name));
     props
 }
 
@@ -550,20 +568,22 @@ fn separator_item() -> HashMap<Cow<'static, str>, OwnedVariant> {
     props
 }
 
-fn build_menu_items(view: &TrayViewState) -> Vec<(i32, HashMap<Cow<'static, str>, OwnedVariant>)> {
+fn build_menu_items(
+    view: &TrayViewState,
+    prayer_icons: &HashMap<PrayerName, Vec<u8>>,
+) -> Vec<(i32, HashMap<Cow<'static, str>, OwnedVariant>)> {
     let mut items = Vec::new();
-    items.push((ID_LOCATION, standard_item(&format!("📍 {}", view.location_label), true)));
-    items.push((ID_COUNTDOWN, standard_item(&format!("⏳ {}", view.countdown_label), true)));
+    items.push((
+        ID_LOCATION,
+        icon_item(&view.location_label, "mark-location-symbolic", true),
+    ));
+    items.push((
+        ID_COUNTDOWN,
+        icon_item(&view.countdown_label, "alarm-symbolic", true),
+    ));
     items.push((ID_SEP_TOP, separator_item()));
 
     for (idx, prayer) in view.prayers.iter().enumerate() {
-        let marker = if prayer.is_next {
-            "▸ "
-        } else if prayer.is_current {
-            "• "
-        } else {
-            "  "
-        };
         let suffix = if prayer.is_next {
             tr("  (Next)")
         } else if prayer.is_current {
@@ -571,11 +591,15 @@ fn build_menu_items(view: &TrayViewState) -> Vec<(i32, HashMap<Cow<'static, str>
         } else {
             String::new()
         };
-        let label = format!("{marker}{:<8}  {}{suffix}", prayer.name.label(), prayer.time);
+        let label = format!("{}  {}{suffix}", prayer.name.label(), prayer.time);
         let mut props = standard_item(&label, true);
-        if prayer.is_current {
-            props.insert(Cow::Borrowed("toggle-type"), str_prop("radio"));
-            props.insert(Cow::Borrowed("toggle-state"), i32_prop(1));
+        props.insert(Cow::Borrowed("toggle-type"), str_prop("radio"));
+        props.insert(
+            Cow::Borrowed("toggle-state"),
+            i32_prop(i32::from(prayer.is_current)),
+        );
+        if let Some(png) = prayer_icons.get(&prayer.name) {
+            props.insert(Cow::Borrowed("icon-data"), bytes_prop(png));
         }
         items.push((ID_PRAYER_BASE + idx as i32, props));
     }
@@ -584,10 +608,22 @@ fn build_menu_items(view: &TrayViewState) -> Vec<(i32, HashMap<Cow<'static, str>
         items.push((ID_SEP_BOTTOM, separator_item()));
     }
 
-    items.push((ID_SHOW_WINDOW, standard_item(&tr("Show Window"), true)));
-    items.push((ID_REFRESH, standard_item(&tr("Refresh Times"), true)));
-    items.push((ID_PREFS, standard_item(&tr("Preferences"), true)));
-    items.push((ID_QUIT, standard_item(&tr("Quit"), true)));
+    items.push((
+        ID_SHOW_WINDOW,
+        icon_item(&tr("Show Window"), "focus-windows-symbolic", true),
+    ));
+    items.push((
+        ID_REFRESH,
+        icon_item(&tr("Refresh Times"), "view-refresh-symbolic", true),
+    ));
+    items.push((
+        ID_PREFS,
+        icon_item(&tr("Preferences"), "preferences-system-symbolic", true),
+    ));
+    items.push((
+        ID_QUIT,
+        icon_item(&tr("Quit"), "application-exit-symbolic", true),
+    ));
 
     items
 }
@@ -671,7 +707,7 @@ async fn run_tray_loop(
                         guard.revision,
                         guard.view.panel_label.clone(),
                         (guard.view.tooltip_title.clone(), guard.view.tooltip_desc.clone()),
-                        build_menu_items(&guard.view),
+                        build_menu_items(&guard.view, &guard.prayer_icons),
                     )
                 };
 
@@ -785,5 +821,327 @@ fn render_crescent_pixmap(size: i32) -> SniPixmap {
         width: size,
         height: size,
         data,
+    }
+}
+
+fn prayer_menu_color(prayer: PrayerName) -> (u8, u8, u8) {
+    match prayer {
+        PrayerName::Imsak => (0x26, 0xd0, 0xbe),  // Dawn Teal
+        PrayerName::Gunes => (0xf9, 0x8a, 0x36),  // Sunrise Orange
+        PrayerName::Ogle => (0xf5, 0xb9, 0x20),   // Midday Gold
+        PrayerName::Ikindi => (0x30, 0xb2, 0xf0), // Afternoon Sky Blue
+        PrayerName::Aksam => (0xf4, 0x62, 0x7c),  // Sunset Rose
+        PrayerName::Yatsi => (0x9c, 0x80, 0xf8),  // Night Violet
+    }
+}
+
+fn render_prayer_menu_icons() -> HashMap<PrayerName, Vec<u8>> {
+    let mut map = HashMap::with_capacity(PrayerName::ALL.len());
+    for prayer in PrayerName::ALL {
+        if let Some(png) = render_prayer_png(prayer, 32) {
+            map.insert(prayer, png);
+        }
+    }
+    map
+}
+
+fn render_prayer_png(prayer: PrayerName, size: i32) -> Option<Vec<u8>> {
+    let mut surface = gtk::cairo::ImageSurface::create(gtk::cairo::Format::ARgb32, size, size).ok()?;
+    {
+        let cr = gtk::cairo::Context::new(&surface).ok()?;
+        cr.scale(size as f64 / 16.0, size as f64 / 16.0);
+        cr.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+
+        match prayer {
+            PrayerName::Imsak => {
+                draw_crescent(&cr, 6.8, 6.0, 4.2, 2.0, -0.8, 3.6);
+                draw_four_point_star(&cr, 12.1, 4.3, 1.8, 0.52);
+                draw_rounded_rect(&cr, 1.5, 12.2, 13.0, 1.7, 0.85);
+            }
+            PrayerName::Gunes => {
+                draw_vertical_arrow(&cr, true);
+                draw_horizon_sun(&cr);
+            }
+            PrayerName::Ogle => {
+                cr.arc(8.0, 8.0, 3.4, 0.0, std::f64::consts::TAU);
+                let _ = cr.fill();
+                for step in 0..8 {
+                    let _ = cr.save();
+                    cr.translate(8.0, 8.0);
+                    cr.rotate(step as f64 * std::f64::consts::FRAC_PI_4);
+                    draw_rounded_rect(&cr, -0.8, -7.0, 1.6, 2.4, 0.8);
+                    let _ = cr.restore();
+                }
+            }
+            PrayerName::Ikindi => {
+                cr.arc(5.2, 5.4, 2.4, 0.0, std::f64::consts::TAU);
+                let _ = cr.fill();
+                for deg in [-90.0f64, -45.0, 0.0, 45.0] {
+                    let _ = cr.save();
+                    cr.translate(5.2, 5.4);
+                    cr.rotate(deg.to_radians());
+                    draw_rounded_rect(&cr, -0.7, -4.4, 1.4, 1.6, 0.7);
+                    let _ = cr.restore();
+                }
+                for (cx, cy, r) in [(6.2, 11.6, 2.2), (9.3, 10.4, 2.9), (12.4, 11.7, 2.1)] {
+                    cr.arc(cx, cy, r, 0.0, std::f64::consts::TAU);
+                    let _ = cr.fill();
+                }
+                cr.rectangle(6.2, 11.3, 6.2, 2.5);
+                let _ = cr.fill();
+            }
+            PrayerName::Aksam => {
+                draw_vertical_arrow(&cr, false);
+                draw_horizon_sun(&cr);
+            }
+            PrayerName::Yatsi => {
+                draw_crescent(&cr, 7.6, 8.0, 5.8, 2.4, -0.9, 4.8);
+                draw_four_point_star(&cr, 11.8, 4.2, 1.8, 0.52);
+                draw_four_point_star(&cr, 13.2, 8.8, 1.3, 0.40);
+            }
+        }
+    }
+
+    surface.flush();
+    let data = surface.data().ok()?;
+    let (tr, tg, tb) = prayer_menu_color(prayer);
+    let mut rgba = Vec::with_capacity((size * size * 4) as usize);
+    for px in data.chunks_exact(4) {
+        let argb = u32::from_ne_bytes([px[0], px[1], px[2], px[3]]);
+        let alpha = (argb >> 24) as u8;
+        rgba.push(tr);
+        rgba.push(tg);
+        rgba.push(tb);
+        rgba.push(alpha);
+    }
+
+    Some(encode_rgba_png(size as u32, size as u32, &rgba))
+}
+
+fn draw_crescent(
+    cr: &gtk::cairo::Context,
+    cx: f64,
+    cy: f64,
+    outer_r: f64,
+    cut_dx: f64,
+    cut_dy: f64,
+    cut_r: f64,
+) {
+    cr.arc(cx, cy, outer_r, 0.0, std::f64::consts::TAU);
+    let _ = cr.fill();
+    cr.set_operator(gtk::cairo::Operator::Clear);
+    cr.arc(cx + cut_dx, cy + cut_dy, cut_r, 0.0, std::f64::consts::TAU);
+    let _ = cr.fill();
+    cr.set_operator(gtk::cairo::Operator::Over);
+    cr.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+}
+
+fn draw_four_point_star(
+    cr: &gtk::cairo::Context,
+    cx: f64,
+    cy: f64,
+    outer_r: f64,
+    inner_r: f64,
+) {
+    cr.move_to(cx, cy - outer_r);
+    cr.line_to(cx + inner_r, cy - inner_r);
+    cr.line_to(cx + outer_r, cy);
+    cr.line_to(cx + inner_r, cy + inner_r);
+    cr.line_to(cx, cy + outer_r);
+    cr.line_to(cx - inner_r, cy + inner_r);
+    cr.line_to(cx - outer_r, cy);
+    cr.line_to(cx - inner_r, cy - inner_r);
+    cr.close_path();
+    let _ = cr.fill();
+}
+
+fn draw_rounded_rect(
+    cr: &gtk::cairo::Context,
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+    r: f64,
+) {
+    let r = r.min(w * 0.5).min(h * 0.5);
+    let right = x + w;
+    let bottom = y + h;
+    cr.new_sub_path();
+    cr.arc(right - r, y + r, r, -std::f64::consts::FRAC_PI_2, 0.0);
+    cr.arc(right - r, bottom - r, r, 0.0, std::f64::consts::FRAC_PI_2);
+    cr.arc(x + r, bottom - r, r, std::f64::consts::FRAC_PI_2, std::f64::consts::PI);
+    cr.arc(x + r, y + r, r, std::f64::consts::PI, 3.0 * std::f64::consts::FRAC_PI_2);
+    cr.close_path();
+    let _ = cr.fill();
+}
+
+fn draw_vertical_arrow(cr: &gtk::cairo::Context, up: bool) {
+    let pts: &[(f64, f64)] = if up {
+        &[
+            (8.0, 1.2),
+            (5.2, 4.2),
+            (6.3, 5.2),
+            (7.2, 4.2),
+            (7.2, 6.8),
+            (8.8, 6.8),
+            (8.8, 4.2),
+            (9.7, 5.2),
+            (10.8, 4.2),
+        ]
+    } else {
+        &[
+            (8.0, 6.8),
+            (10.8, 3.8),
+            (9.7, 2.8),
+            (8.8, 3.8),
+            (8.8, 1.2),
+            (7.2, 1.2),
+            (7.2, 3.8),
+            (6.3, 2.8),
+            (5.2, 3.8),
+        ]
+    };
+    cr.move_to(pts[0].0, pts[0].1);
+    for &(x, y) in &pts[1..] {
+        cr.line_to(x, y);
+    }
+    cr.close_path();
+    let _ = cr.fill();
+}
+
+fn draw_horizon_sun(cr: &gtk::cairo::Context) {
+    cr.arc(8.0, 11.2, 3.6, std::f64::consts::PI, std::f64::consts::TAU);
+    cr.close_path();
+    let _ = cr.fill();
+    draw_rounded_rect(cr, 1.2, 10.0, 2.2, 1.5, 0.75);
+    draw_rounded_rect(cr, 12.6, 10.0, 2.2, 1.5, 0.75);
+    draw_rounded_rect(cr, 1.5, 12.6, 13.0, 1.7, 0.85);
+}
+
+/// Encodes straight RGBA pixels into a spec-compliant PNG using an uncompressed zlib stream.
+fn encode_rgba_png(width: u32, height: u32, rgba: &[u8]) -> Vec<u8> {
+    let row_bytes = (width * 4) as usize;
+    let raw_len = height as usize * (1 + row_bytes);
+    let mut raw = Vec::with_capacity(raw_len);
+    for row in rgba.chunks_exact(row_bytes) {
+        raw.push(0); // Filter type 0 (None)
+        raw.extend_from_slice(row);
+    }
+
+    // Zlib wrapper around uncompressed deflate stored blocks (max 65535 bytes per block).
+    let mut zlib = Vec::with_capacity(raw.len() + 16);
+    zlib.push(0x78);
+    zlib.push(0x01);
+    let mut offset = 0usize;
+    while offset < raw.len() {
+        let chunk_len = (raw.len() - offset).min(65535);
+        let is_final = offset + chunk_len == raw.len();
+        zlib.push(u8::from(is_final));
+        let len_u16 = chunk_len as u16;
+        zlib.extend_from_slice(&len_u16.to_le_bytes());
+        zlib.extend_from_slice(&(!len_u16).to_le_bytes());
+        zlib.extend_from_slice(&raw[offset..offset + chunk_len]);
+        offset += chunk_len;
+    }
+    zlib.extend_from_slice(&adler32(&raw).to_be_bytes());
+
+    let mut png = Vec::with_capacity(64 + zlib.len());
+    png.extend_from_slice(&[137, 80, 78, 71, 13, 10, 26, 10]);
+
+    let mut ihdr = [0u8; 13];
+    ihdr[0..4].copy_from_slice(&width.to_be_bytes());
+    ihdr[4..8].copy_from_slice(&height.to_be_bytes());
+    ihdr[8] = 8; // Bit depth
+    ihdr[9] = 6; // Color type: RGBA
+    write_png_chunk(&mut png, b"IHDR", &ihdr);
+    write_png_chunk(&mut png, b"IDAT", &zlib);
+    write_png_chunk(&mut png, b"IEND", &[]);
+    png
+}
+
+fn write_png_chunk(out: &mut Vec<u8>, tag: &[u8; 4], data: &[u8]) {
+    out.extend_from_slice(&(data.len() as u32).to_be_bytes());
+    out.extend_from_slice(tag);
+    out.extend_from_slice(data);
+    let mut crc_input = Vec::with_capacity(4 + data.len());
+    crc_input.extend_from_slice(tag);
+    crc_input.extend_from_slice(data);
+    out.extend_from_slice(&crc32(&crc_input).to_be_bytes());
+}
+
+fn adler32(data: &[u8]) -> u32 {
+    const MOD: u32 = 65521;
+    let mut s1 = 1u32;
+    let mut s2 = 0u32;
+    for &b in data {
+        s1 = (s1 + b as u32) % MOD;
+        s2 = (s2 + s1) % MOD;
+    }
+    (s2 << 16) | s1
+}
+
+fn crc32(data: &[u8]) -> u32 {
+    let mut crc = 0xFFFF_FFFFu32;
+    for &b in data {
+        crc ^= b as u32;
+        for _ in 0..8 {
+            let mask = (crc & 1).wrapping_neg();
+            crc = (crc >> 1) ^ (0xEDB8_8320 & mask);
+        }
+    }
+    !crc
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tray_menu_uses_icons_instead_of_emojis() {
+        let icons = render_prayer_menu_icons();
+        assert_eq!(icons.len(), PrayerName::ALL.len());
+        for prayer in PrayerName::ALL {
+            let png = icons.get(&prayer).expect("missing prayer png");
+            assert!(png.starts_with(b"\x89PNG\r\n\x1a\n"));
+            assert!(png.len() > 100);
+        }
+
+        let view = TrayViewState {
+            location_label: "İnegöl, Bursa".to_string(),
+            countdown_label: "Fajr in 4 hr 50 min (06:14)".to_string(),
+            panel_label: "Fajr 4h 50m".to_string(),
+            tooltip_title: "Prayer Times — İnegöl".to_string(),
+            tooltip_desc: "Now: Isha".to_string(),
+            prayers: vec![
+                TrayPrayerItem {
+                    name: PrayerName::Imsak,
+                    time: "06:14".to_string(),
+                    is_current: false,
+                    is_next: true,
+                },
+                TrayPrayerItem {
+                    name: PrayerName::Yatsi,
+                    time: "19:14".to_string(),
+                    is_current: true,
+                    is_next: false,
+                },
+            ],
+        };
+
+        let items = build_menu_items(&view, &icons);
+        for (id, props) in &items {
+            if let Some(label_var) = props.get("label") {
+                let label_str: &str = label_var.downcast_ref().expect("label must be string");
+                assert!(!label_str.contains('📍'), "emoji in item {id}");
+                assert!(!label_str.contains('⏳'), "emoji in item {id}");
+                assert!(
+                    props.contains_key("icon-name") || props.contains_key("icon-data"),
+                    "item {id} missing icon"
+                );
+            }
+            if let Some(icon_data) = props.get("icon-data") {
+                assert_eq!(icon_data.value_signature().to_string(), "ay");
+            }
+        }
     }
 }
