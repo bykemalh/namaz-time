@@ -9,7 +9,7 @@
     <key name="preferred-source" type="s">
       <default>"auto"</default>
       <summary>Preferred prayer time provider</summary>
-      <description>Data source preference: auto, imsakiyem, mtopal, or idamedya.</description>
+      <description>Data source preference: auto, imsakiyem, mtopal, ezanvakti, or aladhan.</description>
     </key>
     <key name="run-in-background" type="b">
       <default>true</default>

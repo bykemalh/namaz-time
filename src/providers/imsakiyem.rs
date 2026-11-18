@@ -491,7 +491,7 @@ fn dto_to_candidate(dto: V2DistrictDto) -> LocationCandidate {
         provider_ids: ProviderIds {
             imsakiyem: Some(dto.district_id),
             mtopal: None,
-            idamedya: None,
+            ezanvakti: None,
         },
     }
 }

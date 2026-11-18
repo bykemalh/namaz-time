@@ -1,15 +1,16 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProviderIds {
     pub imsakiyem: Option<String>,
     pub mtopal: Option<String>,
-    pub idamedya: Option<String>,
+    pub ezanvakti: Option<String>,
 }
 
 impl ProviderIds {
     pub fn has_any(&self) -> bool {
-        self.imsakiyem.is_some() || self.mtopal.is_some() || self.idamedya.is_some()
+        self.imsakiyem.is_some() || self.mtopal.is_some() || self.ezanvakti.is_some()
     }
 }
 
@@ -44,7 +45,7 @@ impl LocationProfile {
             .imsakiyem
             .as_deref()
             .or(self.provider_ids.mtopal.as_deref())
-            .or(self.provider_ids.idamedya.as_deref())
+            .or(self.provider_ids.ezanvakti.as_deref())
             .unwrap_or("none");
         let id_slug = slugify_key(primary_id);
         format!("{country}_{city}_{district}_{id_slug}")

@@ -1,15 +1,17 @@
-pub mod idamedya;
+pub mod aladhan;
+pub mod diyanet_mirror;
 pub mod imsakiyem;
-pub mod mtopal;
 
 use std::collections::HashMap;
 use std::fmt;
+use std::future::Future;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 
 use jiff::tz::TimeZone;
 use jiff::Timestamp;
 use reqwest::{Client, Response, StatusCode};
+use serde::{de::DeserializeOwned, Serialize};
 use tracing::{info, warn};
 
 use crate::i18n::{tr, tr_fmt};
@@ -18,6 +20,9 @@ use crate::models::location::{
     system_timezone_iana,
 };
 use crate::models::{LocationCandidate, LocationProfile, ProviderIds, ProviderKind};
+use crate::providers::diyanet_mirror::{
+    DiyanetMirror, EZANVAKTI_MIRROR, MTOPAL_MIRROR, MirrorCity, MirrorCountry, MirrorDistrict,
+};
 use crate::services::cache::{CachedDays, DiskCache};
 
 #[derive(Debug, Clone)]
@@ -82,7 +87,7 @@ pub(crate) async fn check_response_status(resp: Response) -> Result<Response, Pr
 #[derive(Debug, Clone)]
 pub struct CountryOption {
     pub imsakiyem_id: Option<String>,
-    pub mtopal_id: Option<String>,
+    pub mirror: Option<(DiyanetMirror, String)>,
     pub iso2: String,
     pub name: String,
     pub name_en: String,
@@ -91,7 +96,7 @@ pub struct CountryOption {
 #[derive(Debug, Clone)]
 pub struct StateOption {
     pub imsakiyem_id: Option<String>,
-    pub mtopal_id: Option<String>,
+    pub mirror: Option<(DiyanetMirror, String)>,
     pub name: String,
     pub name_en: String,
 }
@@ -135,7 +140,7 @@ impl ProviderCoordinator {
         guard.insert(provider, Instant::now() + Duration::from_secs(secs));
     }
 
-    /// Loads global country list (Imsakiyem v2 primary, mtopal fallback) with 7-day disk cache.
+    /// Loads global country list (Imsakiyem v2 primary, mtopal / EzanVakti mirrors fallback) with 7-day cache.
     pub async fn list_countries(&self, cache: &DiskCache) -> Result<Vec<CountryOption>, String> {
         let now_unix = Timestamp::now().as_second();
         if let Some(cached) =
@@ -146,7 +151,7 @@ impl ProviderCoordinator {
                     .into_iter()
                     .map(|c| CountryOption {
                         imsakiyem_id: Some(c.id),
-                        mtopal_id: None,
+                        mirror: None,
                         iso2: c.iso2,
                         name: c.names.as_ref().and_then(|n| n.tr.clone()).unwrap_or(c.name),
                         name_en: c.names.and_then(|n| n.en).unwrap_or_default(),
@@ -163,7 +168,7 @@ impl ProviderCoordinator {
                         list.into_iter()
                             .map(|c| CountryOption {
                                 imsakiyem_id: Some(c.id),
-                                mtopal_id: None,
+                                mirror: None,
                                 iso2: c.iso2,
                                 name: c.names.as_ref().and_then(|n| n.tr.clone()).unwrap_or(c.name),
                                 name_en: c.names.and_then(|n| n.en).unwrap_or_default(),
@@ -179,20 +184,27 @@ impl ProviderCoordinator {
             }
         }
 
-        // Fallback to mtopal countries
-        let mtopal_list = self.get_mtopal_countries(cache).await?;
-        Ok(sort_countries(
-            mtopal_list
-                .into_iter()
-                .map(|c| CountryOption {
-                    imsakiyem_id: None,
-                    mtopal_id: Some(c.ulke_id),
-                    iso2: String::new(),
-                    name: c.ulke_adi,
-                    name_en: c.ulke_adi_en,
-                })
-                .collect(),
-        ))
+        let mut last_err = None;
+        for mirror in [MTOPAL_MIRROR, EZANVAKTI_MIRROR] {
+            match self.get_mirror_countries(mirror, cache).await {
+                Ok(list) => {
+                    return Ok(sort_countries(
+                        list.into_iter()
+                            .map(|c| CountryOption {
+                                imsakiyem_id: None,
+                                mirror: Some((mirror, c.ulke_id)),
+                                iso2: String::new(),
+                                name: c.ulke_adi,
+                                name_en: c.ulke_adi_en,
+                            })
+                            .collect(),
+                    ));
+                }
+                Err(err) => last_err = Some(err),
+            }
+        }
+
+        Err(last_err.unwrap_or_else(|| tr("Unable to load country list")))
     }
 
     pub async fn list_states(
@@ -210,7 +222,7 @@ impl ProviderCoordinator {
                     .into_iter()
                     .map(|s| StateOption {
                         imsakiyem_id: Some(s.id),
-                        mtopal_id: None,
+                        mirror: None,
                         name: s.name,
                         name_en: s.name_en.unwrap_or_default(),
                     })
@@ -224,7 +236,7 @@ impl ProviderCoordinator {
                             .into_iter()
                             .map(|s| StateOption {
                                 imsakiyem_id: Some(s.id),
-                                mtopal_id: None,
+                                mirror: None,
                                 name: s.name,
                                 name_en: s.name_en.unwrap_or_default(),
                             })
@@ -238,13 +250,13 @@ impl ProviderCoordinator {
             }
         }
 
-        if let Some(mid) = &country.mtopal_id {
-            let cities = self.get_mtopal_cities(mid, cache).await?;
+        if let Some((mirror, country_id)) = &country.mirror {
+            let cities = self.get_mirror_cities(*mirror, country_id, cache).await?;
             return Ok(cities
                 .into_iter()
                 .map(|c| StateOption {
                     imsakiyem_id: None,
-                    mtopal_id: Some(c.sehir_id),
+                    mirror: Some((*mirror, c.sehir_id)),
                     name: c.sehir_adi,
                     name_en: c.sehir_adi_en,
                 })
@@ -295,26 +307,37 @@ impl ProviderCoordinator {
             }
         }
 
-        if let Some(mid) = &state.mtopal_id {
-            let districts = self.get_mtopal_districts(mid, cache).await?;
+        if let Some((mirror, city_id)) = &state.mirror {
+            let districts = self.get_mirror_districts(*mirror, city_id, cache).await?;
             let tz = fallback_timezone_for_country(&country.iso2, &country.name)
                 .map(str::to_string);
             return Ok(districts
                 .into_iter()
-                .map(|d| LocationCandidate {
-                    country_code: country.iso2.clone(),
-                    country_name: country.name.clone(),
-                    city_name: state.name.clone(),
-                    district_name: d.ilce_adi.clone(),
-                    display_label: format!("{}, {}, {}", d.ilce_adi, state.name, country.name),
-                    timezone: tz.clone(),
-                    lat: None,
-                    lon: None,
-                    provider_ids: ProviderIds {
-                        imsakiyem: None,
-                        mtopal: Some(d.ilce_id),
-                        idamedya: None,
-                    },
+                .map(|d| {
+                    let mut ids = ProviderIds::default();
+                    match mirror.kind {
+                        ProviderKind::Mtopal => ids.mtopal = Some(d.ilce_id.clone()),
+                        ProviderKind::Ezanvakti => ids.ezanvakti = Some(d.ilce_id.clone()),
+                        _ => {}
+                    }
+                    LocationCandidate {
+                        country_code: country.iso2.clone(),
+                        country_name: country.name.clone(),
+                        city_name: state.name.clone(),
+                        district_name: d.ilce_adi,
+                        display_label: String::new(),
+                        timezone: tz.clone(),
+                        lat: None,
+                        lon: None,
+                        provider_ids: ids,
+                    }
+                })
+                .map(|mut cand| {
+                    cand.display_label = format!(
+                        "{}, {}, {}",
+                        cand.district_name, cand.city_name, cand.country_name
+                    );
+                    cand
                 })
                 .collect());
         }
@@ -342,33 +365,29 @@ impl ProviderCoordinator {
             }
         }
 
-        // Offline/fallback search across Turkish provinces from Idamedya if Turkey query
+        // Fallback search across Turkish provinces from reliable Diyanet mirrors (country ID = 2)
         let q_norm = normalize_name(trimmed);
-        if let Ok(provinces) = self.get_idamedya_provinces(cache).await {
-            let matched: Vec<LocationCandidate> = provinces
-                .into_iter()
-                .filter(|p| normalize_name(&p.ad).contains(&q_norm))
-                .map(|p| {
-                    let tr_name = tr("Turkey");
-                    LocationCandidate {
+        for mirror in [EZANVAKTI_MIRROR, MTOPAL_MIRROR] {
+            if let Ok(cities) = self.get_mirror_cities(mirror, "2", cache).await {
+                let tr_name = tr("Turkey");
+                let matched: Vec<LocationCandidate> = cities
+                    .into_iter()
+                    .filter(|c| normalize_name(&c.sehir_adi).contains(&q_norm))
+                    .map(|c| LocationCandidate {
                         country_code: "TR".to_string(),
                         country_name: tr_name.clone(),
-                        city_name: p.ad.clone(),
-                        district_name: p.ad.clone(),
-                        display_label: format!("{}, {}", p.ad, tr_name),
+                        city_name: c.sehir_adi.clone(),
+                        district_name: c.sehir_adi.clone(),
+                        display_label: format!("{}, {}", c.sehir_adi, tr_name),
                         timezone: Some("Europe/Istanbul".to_string()),
                         lat: None,
                         lon: None,
-                        provider_ids: ProviderIds {
-                            imsakiyem: None,
-                            mtopal: None,
-                            idamedya: Some(p.ilce.to_string()),
-                        },
-                    }
-                })
-                .collect();
-            if !matched.is_empty() {
-                return Ok(matched);
+                        provider_ids: ProviderIds::default(),
+                    })
+                    .collect();
+                if !matched.is_empty() {
+                    return Ok(matched);
+                }
             }
         }
 
@@ -376,7 +395,7 @@ impl ProviderCoordinator {
     }
 
     /// Ensures the LocationProfile has accurate IANA timezone and resolves verified matching
-    /// IDs across the other providers without blindly assuming identical numeric IDs.
+    /// IDs across providers without blindly assuming identical numeric IDs.
     pub async fn resolve_location_profile(
         &self,
         candidate: LocationCandidate,
@@ -388,8 +407,8 @@ impl ProviderCoordinator {
         let mut lat = candidate.lat;
         let mut lon = candidate.lon;
 
-        // Enrich with Imsakiyem detail if we have imsakiyem_id but missing timezone
-        if timezone.is_none() {
+        // Enrich with Imsakiyem detail if we have imsakiyem_id but missing metadata
+        if timezone.is_none() || lat.is_none() || lon.is_none() {
             if let Some(ref ims_id) = ids.imsakiyem {
                 if let Ok(detail) = imsakiyem::fetch_district_detail(&self.client, ims_id).await {
                     if timezone.is_none() {
@@ -408,19 +427,22 @@ impl ProviderCoordinator {
             }
         }
 
-        // If selected from mtopal while Imsakiyem was down, try matching in Imsakiyem search
+        // If selected from a mirror while Imsakiyem was down, try matching in Imsakiyem search
         if ids.imsakiyem.is_none() && !self.is_cooling_down(ProviderKind::Imsakiyem) {
             if let Ok(results) =
                 imsakiyem::search_districts(&self.client, &candidate.district_name).await
             {
                 let d_targets = expand_name_aliases(&candidate.district_name, Some(&candidate.city_name));
                 let c_targets = expand_name_aliases(&candidate.country_name, None);
-                let matched = results.into_iter().filter(|r| {
-                    let r_c = expand_name_aliases(&r.country_name, None);
-                    let r_d = expand_name_aliases(&r.district_name, Some(&r.city_name));
-                    c_targets.iter().any(|x| r_c.contains(x))
-                        && d_targets.iter().any(|x| r_d.contains(x))
-                }).collect::<Vec<_>>();
+                let matched = results
+                    .into_iter()
+                    .filter(|r| {
+                        let r_c = expand_name_aliases(&r.country_name, None);
+                        let r_d = expand_name_aliases(&r.district_name, Some(&r.city_name));
+                        c_targets.iter().any(|x| r_c.contains(x))
+                            && d_targets.iter().any(|x| r_d.contains(x))
+                    })
+                    .collect::<Vec<_>>();
                 if matched.len() == 1 {
                     ids.imsakiyem = matched[0].provider_ids.imsakiyem.clone();
                     if timezone.is_none() {
@@ -428,6 +450,12 @@ impl ProviderCoordinator {
                     }
                     if country_code.is_empty() {
                         country_code = matched[0].country_code.clone();
+                    }
+                    if lat.is_none() {
+                        lat = matched[0].lat;
+                    }
+                    if lon.is_none() {
+                        lon = matched[0].lon;
                     }
                 }
             }
@@ -452,30 +480,33 @@ impl ProviderCoordinator {
             provider_ids: ids,
         };
 
-        // Resolve mtopal ID by verified name matching
         if profile.provider_ids.mtopal.is_none() {
-            profile.provider_ids.mtopal = self.match_mtopal_id(&profile, cache).await;
+            profile.provider_ids.mtopal = self.match_mirror_id(MTOPAL_MIRROR, &profile, cache).await;
         }
-
-        // Resolve Idamedya ID only for Turkey
-        if profile.is_turkey() && profile.provider_ids.idamedya.is_none() {
-            profile.provider_ids.idamedya = self.match_idamedya_id(&profile, cache).await;
+        if profile.provider_ids.ezanvakti.is_none() {
+            profile.provider_ids.ezanvakti =
+                self.match_mirror_id(EZANVAKTI_MIRROR, &profile, cache).await;
         }
 
         info!(
-            "Konum eşleştirildi: {} -> tz={}, imsakiyem={:?}, mtopal={:?}, idamedya={:?}",
+            "Konum eşleştirildi: {} -> tz={}, imsakiyem={:?}, mtopal={:?}, ezanvakti={:?}",
             profile.display_label,
             profile.timezone,
             profile.provider_ids.imsakiyem,
             profile.provider_ids.mtopal,
-            profile.provider_ids.idamedya
+            profile.provider_ids.ezanvakti
         );
 
         profile
     }
 
-    async fn match_mtopal_id(&self, profile: &LocationProfile, cache: &DiskCache) -> Option<String> {
-        let countries = self.get_mtopal_countries(cache).await.ok()?;
+    async fn match_mirror_id(
+        &self,
+        mirror: DiyanetMirror,
+        profile: &LocationProfile,
+        cache: &DiskCache,
+    ) -> Option<String> {
+        let countries = self.get_mirror_countries(mirror, cache).await.ok()?;
         let c_targets = expand_name_aliases(&profile.country_name, None);
         let country = match_unique_by_name(&c_targets, &countries, |c| {
             let mut v = expand_name_aliases(&c.ulke_adi, None);
@@ -485,7 +516,7 @@ impl ProviderCoordinator {
             v
         })?;
 
-        let cities = self.get_mtopal_cities(&country.ulke_id, cache).await.ok()?;
+        let cities = self.get_mirror_cities(mirror, &country.ulke_id, cache).await.ok()?;
         let s_targets = expand_name_aliases(&profile.city_name, None);
         let city = match_unique_by_name(&s_targets, &cities, |s| {
             let mut v = expand_name_aliases(&s.sehir_adi, None);
@@ -495,7 +526,7 @@ impl ProviderCoordinator {
             v
         })?;
 
-        let districts = self.get_mtopal_districts(&city.sehir_id, cache).await.ok()?;
+        let districts = self.get_mirror_districts(mirror, &city.sehir_id, cache).await.ok()?;
         let d_targets = expand_name_aliases(&profile.district_name, Some(&profile.city_name));
         let district = match_unique_by_name(&d_targets, &districts, |d| {
             let mut v = expand_name_aliases(&d.ilce_adi, Some(&city.sehir_adi));
@@ -508,169 +539,79 @@ impl ProviderCoordinator {
         Some(district.ilce_id.clone())
     }
 
-    async fn match_idamedya_id(
+    async fn get_cached_mirror_list<T, Fut>(
         &self,
-        profile: &LocationProfile,
+        mirror: DiyanetMirror,
+        cache_key: &str,
         cache: &DiskCache,
-    ) -> Option<String> {
-        let provinces = self.get_idamedya_provinces(cache).await.ok()?;
-        let s_targets = expand_name_aliases(&profile.city_name, None);
-        let province = match_unique_by_name(&s_targets, &provinces, |p| {
-            expand_name_aliases(&p.ad, None)
-        })?;
-
-        let districts = self
-            .get_idamedya_districts(province.sehir, cache)
-            .await
-            .ok()?;
-        let d_targets = expand_name_aliases(&profile.district_name, Some(&profile.city_name));
-        let district = match_unique_by_name(&d_targets, &districts, |d| {
-            expand_name_aliases(&d.ad, Some(&province.ad))
-        })?;
-
-        Some(district.ilce.to_string())
-    }
-
-    async fn get_mtopal_countries(
-        &self,
-        cache: &DiskCache,
-    ) -> Result<Vec<mtopal::MtopalCountry>, String> {
+        fetch: impl FnOnce() -> Fut,
+    ) -> Result<Vec<T>, String>
+    where
+        T: Serialize + DeserializeOwned,
+        Fut: Future<Output = Result<Vec<T>, ProviderError>>,
+    {
         let now_unix = Timestamp::now().as_second();
-        if let Some(cached) =
-            cache.load_location_list::<Vec<mtopal::MtopalCountry>>("mtopal_countries", now_unix, false)
-        {
+        if let Some(cached) = cache.load_location_list::<Vec<T>>(cache_key, now_unix, false) {
             return Ok(cached);
         }
-        if self.is_cooling_down(ProviderKind::Mtopal) {
+        if self.is_cooling_down(mirror.kind) {
             return cache
-                .load_location_list("mtopal_countries", now_unix, true)
-                .ok_or_else(|| tr("mtopal rate limit pending"));
+                .load_location_list(cache_key, now_unix, true)
+                .ok_or_else(|| tr_fmt("%1 rate limit pending", &[mirror.label]));
         }
-        match mtopal::fetch_countries(&self.client).await {
+        match fetch().await {
             Ok(list) => {
-                cache.save_location_list("mtopal_countries", &list, now_unix);
+                cache.save_location_list(cache_key, &list, now_unix);
                 Ok(list)
             }
             Err(ProviderError::RateLimited { retry_after_secs }) => {
-                self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
+                self.record_rate_limit(mirror.kind, retry_after_secs);
                 cache
-                    .load_location_list("mtopal_countries", now_unix, true)
-                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
+                    .load_location_list(cache_key, now_unix, true)
+                    .ok_or_else(|| tr_fmt("%1 rate limit exceeded", &[mirror.label]))
             }
             Err(err) => cache
-                .load_location_list("mtopal_countries", now_unix, true)
+                .load_location_list(cache_key, now_unix, true)
                 .ok_or_else(|| err.to_string()),
         }
     }
 
-    async fn get_mtopal_cities(
+    async fn get_mirror_countries(
         &self,
+        mirror: DiyanetMirror,
+        cache: &DiskCache,
+    ) -> Result<Vec<MirrorCountry>, String> {
+        let key = format!("{}_countries", mirror.cache_prefix);
+        self.get_cached_mirror_list(mirror, &key, cache, || {
+            diyanet_mirror::fetch_countries(&self.client, mirror)
+        })
+        .await
+    }
+
+    async fn get_mirror_cities(
+        &self,
+        mirror: DiyanetMirror,
         country_id: &str,
         cache: &DiskCache,
-    ) -> Result<Vec<mtopal::MtopalCity>, String> {
-        let now_unix = Timestamp::now().as_second();
-        let key = format!("mtopal_cities_{country_id}");
-        if let Some(cached) = cache.load_location_list::<Vec<mtopal::MtopalCity>>(&key, now_unix, false) {
-            return Ok(cached);
-        }
-        if self.is_cooling_down(ProviderKind::Mtopal) {
-            return cache
-                .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| tr("mtopal rate limit pending"));
-        }
-        match mtopal::fetch_cities(&self.client, country_id).await {
-            Ok(list) => {
-                cache.save_location_list(&key, &list, now_unix);
-                Ok(list)
-            }
-            Err(ProviderError::RateLimited { retry_after_secs }) => {
-                self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
-                cache
-                    .load_location_list(&key, now_unix, true)
-                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
-            }
-            Err(err) => cache
-                .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| err.to_string()),
-        }
+    ) -> Result<Vec<MirrorCity>, String> {
+        let key = format!("{}_cities_{country_id}", mirror.cache_prefix);
+        self.get_cached_mirror_list(mirror, &key, cache, || {
+            diyanet_mirror::fetch_cities(&self.client, mirror, country_id)
+        })
+        .await
     }
 
-    async fn get_mtopal_districts(
+    async fn get_mirror_districts(
         &self,
+        mirror: DiyanetMirror,
         city_id: &str,
         cache: &DiskCache,
-    ) -> Result<Vec<mtopal::MtopalDistrict>, String> {
-        let now_unix = Timestamp::now().as_second();
-        let key = format!("mtopal_districts_{city_id}");
-        if let Some(cached) =
-            cache.load_location_list::<Vec<mtopal::MtopalDistrict>>(&key, now_unix, false)
-        {
-            return Ok(cached);
-        }
-        if self.is_cooling_down(ProviderKind::Mtopal) {
-            return cache
-                .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| tr("mtopal rate limit pending"));
-        }
-        match mtopal::fetch_districts(&self.client, city_id).await {
-            Ok(list) => {
-                cache.save_location_list(&key, &list, now_unix);
-                Ok(list)
-            }
-            Err(ProviderError::RateLimited { retry_after_secs }) => {
-                self.record_rate_limit(ProviderKind::Mtopal, retry_after_secs);
-                cache
-                    .load_location_list(&key, now_unix, true)
-                    .ok_or_else(|| tr("mtopal rate limit exceeded"))
-            }
-            Err(err) => cache
-                .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| err.to_string()),
-        }
-    }
-
-    async fn get_idamedya_provinces(
-        &self,
-        cache: &DiskCache,
-    ) -> Result<Vec<idamedya::IdamedyaProvince>, String> {
-        let now_unix = Timestamp::now().as_second();
-        if let Some(cached) = cache
-            .load_location_list::<Vec<idamedya::IdamedyaProvince>>("idamedya_iller", now_unix, false)
-        {
-            return Ok(cached);
-        }
-        match idamedya::fetch_provinces(&self.client).await {
-            Ok(list) => {
-                cache.save_location_list("idamedya_iller", &list, now_unix);
-                Ok(list)
-            }
-            Err(err) => cache
-                .load_location_list("idamedya_iller", now_unix, true)
-                .ok_or_else(|| err.to_string()),
-        }
-    }
-
-    async fn get_idamedya_districts(
-        &self,
-        sehir_id: u64,
-        cache: &DiskCache,
-    ) -> Result<Vec<idamedya::IdamedyaDistrict>, String> {
-        let now_unix = Timestamp::now().as_second();
-        let key = format!("idamedya_ilceler_{sehir_id}");
-        if let Some(cached) =
-            cache.load_location_list::<Vec<idamedya::IdamedyaDistrict>>(&key, now_unix, false)
-        {
-            return Ok(cached);
-        }
-        match idamedya::fetch_districts(&self.client, sehir_id).await {
-            Ok(list) => {
-                cache.save_location_list(&key, &list, now_unix);
-                Ok(list)
-            }
-            Err(err) => cache
-                .load_location_list(&key, now_unix, true)
-                .ok_or_else(|| err.to_string()),
-        }
+    ) -> Result<Vec<MirrorDistrict>, String> {
+        let key = format!("{}_districts_{city_id}", mirror.cache_prefix);
+        self.get_cached_mirror_list(mirror, &key, cache, || {
+            diyanet_mirror::fetch_districts(&self.client, mirror, city_id)
+        })
+        .await
     }
 
     /// Loads prayer days from disk cache when fresh, otherwise queries providers in fallback order
@@ -701,19 +642,6 @@ impl ProviderCoordinator {
         let mut errors = Vec::new();
 
         for provider in order {
-            let id_opt = match provider {
-                ProviderKind::Imsakiyem => profile.provider_ids.imsakiyem.as_deref(),
-                ProviderKind::Mtopal => profile.provider_ids.mtopal.as_deref(),
-                ProviderKind::Idamedya => {
-                    if profile.is_turkey() {
-                        profile.provider_ids.idamedya.as_deref()
-                    } else {
-                        None
-                    }
-                }
-            };
-
-            let Some(id) = id_opt else { continue };
             if self.is_cooling_down(provider) {
                 errors.push(tr_fmt("%1: cooldown active", &[&provider.display_name()]));
                 continue;
@@ -721,14 +649,42 @@ impl ProviderCoordinator {
 
             let res = match provider {
                 ProviderKind::Imsakiyem => {
+                    let Some(id) = profile.provider_ids.imsakiyem.as_deref() else {
+                        continue;
+                    };
                     let (from, to) = imsakiyem::default_range_for(now);
                     imsakiyem::fetch_prayer_times(&self.client, id, from, to, now.as_second()).await
                 }
                 ProviderKind::Mtopal => {
-                    mtopal::fetch_prayer_times(&self.client, id, now.as_second()).await
+                    let Some(id) = profile.provider_ids.mtopal.as_deref() else {
+                        continue;
+                    };
+                    diyanet_mirror::fetch_prayer_times(
+                        &self.client,
+                        MTOPAL_MIRROR,
+                        id,
+                        now.as_second(),
+                    )
+                    .await
                 }
-                ProviderKind::Idamedya => {
-                    idamedya::fetch_prayer_times(&self.client, id, now.as_second()).await
+                ProviderKind::Ezanvakti => {
+                    let resolved_id = match profile.provider_ids.ezanvakti.clone() {
+                        Some(id) => Some(id),
+                        None => self.match_mirror_id(EZANVAKTI_MIRROR, profile, cache).await,
+                    };
+                    let Some(id) = resolved_id else {
+                        continue;
+                    };
+                    diyanet_mirror::fetch_prayer_times(
+                        &self.client,
+                        EZANVAKTI_MIRROR,
+                        &id,
+                        now.as_second(),
+                    )
+                    .await
+                }
+                ProviderKind::Aladhan => {
+                    aladhan::fetch_prayer_times(&self.client, profile, now).await
                 }
             };
 
@@ -818,11 +774,21 @@ mod tests {
     fn provider_order_respects_preferred() {
         assert_eq!(
             provider_order(Some(ProviderKind::Mtopal)),
-            vec![ProviderKind::Mtopal, ProviderKind::Imsakiyem, ProviderKind::Idamedya]
+            vec![
+                ProviderKind::Mtopal,
+                ProviderKind::Imsakiyem,
+                ProviderKind::Ezanvakti,
+                ProviderKind::Aladhan,
+            ]
         );
         assert_eq!(
             provider_order(None),
-            vec![ProviderKind::Imsakiyem, ProviderKind::Mtopal, ProviderKind::Idamedya]
+            vec![
+                ProviderKind::Imsakiyem,
+                ProviderKind::Mtopal,
+                ProviderKind::Ezanvakti,
+                ProviderKind::Aladhan,
+            ]
         );
     }
 
@@ -831,14 +797,14 @@ mod tests {
         let countries = vec![
             CountryOption {
                 imsakiyem_id: Some("13".into()),
-                mtopal_id: None,
+                mirror: None,
                 iso2: "DE".into(),
                 name: "Almanya".into(),
                 name_en: "Germany".into(),
             },
             CountryOption {
                 imsakiyem_id: Some("2".into()),
-                mtopal_id: None,
+                mirror: None,
                 iso2: "TR".into(),
                 name: "Türkiye".into(),
                 name_en: "Turkey".into(),

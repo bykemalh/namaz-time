@@ -13,17 +13,24 @@ use crate::i18n::{active_lang, tr, tr_fmt, AppLang};
 pub enum ProviderKind {
     Imsakiyem,
     Mtopal,
-    Idamedya,
+    Ezanvakti,
+    Aladhan,
 }
 
 impl ProviderKind {
-    pub const ALL: [Self; 3] = [Self::Imsakiyem, Self::Mtopal, Self::Idamedya];
+    pub const ALL: [Self; 4] = [
+        Self::Imsakiyem,
+        Self::Mtopal,
+        Self::Ezanvakti,
+        Self::Aladhan,
+    ];
 
     pub fn id(self) -> &'static str {
         match self {
             Self::Imsakiyem => "imsakiyem",
             Self::Mtopal => "mtopal",
-            Self::Idamedya => "idamedya",
+            Self::Ezanvakti => "ezanvakti",
+            Self::Aladhan => "aladhan",
         }
     }
 
@@ -31,19 +38,26 @@ impl ProviderKind {
         match self {
             Self::Imsakiyem => tr("Imsakiyem"),
             Self::Mtopal => "mtopal v1.5".to_string(),
-            Self::Idamedya => tr("IDA Medya"),
+            Self::Ezanvakti => tr("EzanVakti (emushaf.net)"),
+            Self::Aladhan => tr("AlAdhan (Diyanet Method)"),
         }
     }
 
     pub fn attribution_text(self) -> String {
-        tr_fmt("%1 (Diyanet data)", &[&self.display_name()])
+        match self {
+            Self::Aladhan => tr_fmt("%1 (Diyanet method)", &[&self.display_name()]),
+            Self::Imsakiyem | Self::Mtopal | Self::Ezanvakti => {
+                tr_fmt("%1 (Diyanet data)", &[&self.display_name()])
+            }
+        }
     }
 
     pub fn from_id(s: &str) -> Option<Self> {
         match s.trim().to_ascii_lowercase().as_str() {
             "imsakiyem" => Some(Self::Imsakiyem),
             "mtopal" => Some(Self::Mtopal),
-            "idamedya" => Some(Self::Idamedya),
+            "ezanvakti" => Some(Self::Ezanvakti),
+            "aladhan" => Some(Self::Aladhan),
             _ => None,
         }
     }

@@ -690,7 +690,8 @@ impl NamazTimeApplication {
         let win = self.get_or_create_window();
         let credit_imsakiyem = tr("Imsakiyem API (Diyanet data)");
         let credit_mtopal = tr("mtopal Prayer Times v1.5 (Diyanet data)");
-        let credit_idamedya = tr("IDA Medya Prayer Times API (Turkey / Diyanet data)");
+        let credit_ezanvakti = tr("EzanVakti API (emushaf.net / Diyanet data)");
+        let credit_aladhan = tr("AlAdhan API (Diyanet method fallback)");
         let about = adw::AboutDialog::builder()
             .application_name(tr("Prayer Times"))
             .application_icon("io.github.bykemalh.namaz_time.NamazTime")
@@ -700,7 +701,7 @@ impl NamazTimeApplication {
             .issue_url("https://github.com/bykemalh/namaz-time/issues")
             .developers(vec!["Kemal https://github.com/bykemalh"])
             .comments(tr(
-                "Native GNOME prayer times application with top-bar countdown, system tray menu, and three-stage Diyanet API fallback.",
+                "Native GNOME prayer times application with top-bar countdown, system tray menu, and multi-provider Diyanet API fallback.",
             ))
             .license_type(gtk::License::MitX11)
             .translator_credits("Kemal (@bykemalh)")
@@ -712,7 +713,8 @@ impl NamazTimeApplication {
             &[
                 credit_imsakiyem.as_str(),
                 credit_mtopal.as_str(),
-                credit_idamedya.as_str(),
+                credit_ezanvakti.as_str(),
+                credit_aladhan.as_str(),
             ],
         );
 

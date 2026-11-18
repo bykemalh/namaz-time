@@ -32,8 +32,11 @@ pub fn show_preferences_dialog(
             if loc.provider_ids.mtopal.is_some() {
                 matched.push("mtopal".to_string());
             }
-            if loc.provider_ids.idamedya.is_some() {
-                matched.push(tr("IDA Medya"));
+            if loc.provider_ids.ezanvakti.is_some() {
+                matched.push("EzanVakti".to_string());
+            }
+            if loc.lat.zip(loc.lon).is_some() || !loc.city_name.is_empty() {
+                matched.push("AlAdhan".to_string());
             }
             let sources = if matched.is_empty() {
                 tr("None")
@@ -71,12 +74,14 @@ pub fn show_preferences_dialog(
 
     let src_auto = tr("Automatic (Recommended)");
     let src_ims = tr("Imsakiyem");
-    let src_ida = tr("IDA Medya (Turkey Only)");
+    let src_ezan = tr("EzanVakti (emushaf.net)");
+    let src_ala = tr("AlAdhan (Diyanet Method)");
     let source_options = gtk::StringList::new(&[
         src_auto.as_str(),
         src_ims.as_str(),
         "mtopal v1.5",
-        src_ida.as_str(),
+        src_ezan.as_str(),
+        src_ala.as_str(),
     ]);
     let source_row = adw::ComboRow::builder()
         .title(tr("Preferred data source"))
@@ -87,7 +92,8 @@ pub fn show_preferences_dialog(
     let initial_source_idx = match settings.preferred_source_id().as_str() {
         "imsakiyem" => 1,
         "mtopal" => 2,
-        "idamedya" => 3,
+        "ezanvakti" => 3,
+        "aladhan" => 4,
         _ => 0,
     };
     source_row.set_selected(initial_source_idx);
@@ -190,7 +196,8 @@ pub fn show_preferences_dialog(
             let id = match row.selected() {
                 1 => "imsakiyem",
                 2 => "mtopal",
-                3 => "idamedya",
+                3 => "ezanvakti",
+                4 => "aladhan",
                 _ => "auto",
             };
             settings.set_preferred_source_id(id);

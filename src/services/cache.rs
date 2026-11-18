@@ -161,8 +161,8 @@ impl DiskCache {
         }
 
         let max_age_secs = match today_entry.source {
-            ProviderKind::Idamedya => 6 * 3600,
-            ProviderKind::Imsakiyem | ProviderKind::Mtopal => 24 * 3600,
+            ProviderKind::Aladhan => 6 * 3600,
+            ProviderKind::Imsakiyem | ProviderKind::Mtopal | ProviderKind::Ezanvakti => 24 * 3600,
         };
         now.as_second().saturating_sub(cached.last_sync_unix) > max_age_secs
     }
