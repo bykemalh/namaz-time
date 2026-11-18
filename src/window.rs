@@ -1,4 +1,4 @@
-use std::cell::OnceCell;
+use std::cell::{OnceCell, RefCell};
 
 use adw::prelude::*;
 use adw::subclass::prelude::*;
@@ -6,13 +6,16 @@ use gtk::{gio, glib};
 
 use crate::i18n::{localize_hijri, tr, tr_fmt};
 use crate::models::{
-    LocationProfile, PrayerName, ScheduleSnapshot, format_hm, format_hm_words, format_hms,
+    AppearanceConfig, HeroTheme, LocationProfile, PrayerName, ScheduleSnapshot, UiStyle, format_hm,
+    format_hm_words, format_hms,
 };
+use crate::ui::set_css_class;
 
 #[derive(Debug, Clone)]
 struct PrayerRowWidgets {
     prayer: PrayerName,
-    row: adw::ActionRow,
+    row: gtk::ListBoxRow,
+    bg_pic: gtk::Picture,
     badge: gtk::Label,
     time_label: gtk::Label,
 }
@@ -48,9 +51,19 @@ mod imp {
         #[template_child]
         pub error_location_button: TemplateChild<gtk::Button>,
         #[template_child]
+        pub hero_card_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub hero_content_box: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub hero_media_overlay: TemplateChild<gtk::Overlay>,
+        #[template_child]
+        pub hero_bg_picture: TemplateChild<gtk::Picture>,
+        #[template_child]
         pub gregorian_date_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub hijri_date_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub current_prayer_icon: TemplateChild<gtk::Image>,
         #[template_child]
         pub current_prayer_badge: TemplateChild<gtk::Label>,
         #[template_child]
@@ -69,6 +82,7 @@ mod imp {
         pub source_label: TemplateChild<gtk::Label>,
 
         pub(super) prayer_rows: OnceCell<Vec<PrayerRowWidgets>>,
+        pub(super) active_hero_resource: RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]
@@ -118,21 +132,52 @@ impl NamazTimeWindow {
 
         let mut rows = Vec::with_capacity(PrayerName::ALL.len());
         for prayer in PrayerName::ALL {
-            let row = adw::ActionRow::builder()
-                .title(prayer.label())
+            let row = gtk::ListBoxRow::builder()
                 .activatable(false)
+                .selectable(false)
                 .build();
+            row.add_css_class("prayer-row");
+
+            let overlay = gtk::Overlay::builder()
+                .overflow(gtk::Overflow::Hidden)
+                .build();
+            overlay.add_css_class("prayer-row-overlay");
+
+            let bg_path = format!(
+                "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/prayer-{}.svg",
+                prayer.css_key()
+            );
+            let bg_pic = gtk::Picture::for_resource(&bg_path);
+            bg_pic.set_can_shrink(true);
+            bg_pic.set_content_fit(gtk::ContentFit::Cover);
+            overlay.set_child(Some(&bg_pic));
+
+            let content = gtk::Box::builder()
+                .orientation(gtk::Orientation::Horizontal)
+                .spacing(12)
+                .hexpand(true)
+                .vexpand(true)
+                .build();
+            content.add_css_class("prayer-row-scrim");
 
             let icon = gtk::Image::builder()
                 .icon_name(prayer.icon_name())
                 .pixel_size(18)
+                .valign(gtk::Align::Center)
                 .build();
-            icon.add_css_class("dim-label");
-            row.add_prefix(&icon);
+            icon.add_css_class("prayer-row-icon");
+            icon.add_css_class(&format!("prayer-icon-{}", prayer.css_key()));
+
+            let title = gtk::Label::builder()
+                .label(prayer.label())
+                .hexpand(true)
+                .xalign(0.0)
+                .valign(gtk::Align::Center)
+                .build();
+            title.add_css_class("prayer-row-title");
 
             let badge = gtk::Label::builder()
                 .valign(gtk::Align::Center)
-                .margin_end(8)
                 .visible(false)
                 .build();
             badge.add_css_class("pill-badge");
@@ -143,13 +188,20 @@ impl NamazTimeWindow {
                 .build();
             time_label.add_css_class("prayer-time-digits");
 
-            row.add_suffix(&badge);
-            row.add_suffix(&time_label);
+            content.append(&icon);
+            content.append(&title);
+            content.append(&badge);
+            content.append(&time_label);
+
+            overlay.add_overlay(&content);
+            overlay.set_measure_overlay(&content, true);
+            row.set_child(Some(&overlay));
             imp.prayers_list.append(&row);
 
             rows.push(PrayerRowWidgets {
                 prayer,
                 row,
+                bg_pic,
                 badge,
                 time_label,
             });
@@ -176,6 +228,32 @@ impl NamazTimeWindow {
         imp.tray_warning_banner.connect_button_clicked(|banner| {
             banner.set_revealed(false);
         });
+    }
+
+    pub fn apply_appearance(&self, appearance: AppearanceConfig) {
+        let imp = self.imp();
+        for style in UiStyle::ALL {
+            let cls = format!("ui-style-{}", style.id());
+            set_css_class(self, &cls, style == appearance.ui_style);
+        }
+        let show_colorful_icons =
+            appearance.colorful_icons && appearance.ui_style != UiStyle::Minimal;
+        set_css_class(self, "icons-colorful", show_colorful_icons);
+
+        let is_illustrated = appearance.ui_style == UiStyle::Illustrated;
+        imp.hero_media_overlay.set_visible(is_illustrated);
+        imp.hero_content_box.set_hexpand(!is_illustrated);
+
+        for theme in HeroTheme::ALL {
+            let cls = format!("hero-theme-{}", theme.id());
+            set_css_class(&*imp.hero_card_box, &cls, is_illustrated && theme == appearance.hero_theme);
+        }
+
+        if let Some(rows) = imp.prayer_rows.get() {
+            for item in rows {
+                item.bg_pic.set_visible(is_illustrated);
+            }
+        }
     }
 
     pub fn set_location_title(&self, title: Option<&str>) {
@@ -237,8 +315,17 @@ impl NamazTimeWindow {
         profile: &LocationProfile,
         snap: &ScheduleSnapshot,
         show_seconds: bool,
+        appearance: AppearanceConfig,
     ) {
         let imp = self.imp();
+        self.apply_appearance(appearance);
+        if appearance.ui_style == UiStyle::Illustrated {
+            let hero_path = appearance.hero_theme.hero_resource(snap.current_prayer);
+            if imp.active_hero_resource.borrow().as_deref() != Some(hero_path.as_str()) {
+                *imp.active_hero_resource.borrow_mut() = Some(hero_path.clone());
+                imp.hero_bg_picture.set_resource(Some(&hero_path));
+            }
+        }
         self.set_location_title(Some(&profile.short_title()));
         imp.loading_spinner.stop();
         if imp.main_stack.visible_child_name().as_deref() != Some("content") {
@@ -263,6 +350,8 @@ impl NamazTimeWindow {
             imp.hijri_date_label.set_visible(false);
         }
 
+        imp.current_prayer_icon
+            .set_icon_name(Some(snap.current_prayer.icon_name()));
         imp.current_prayer_badge
             .set_label(&tr_fmt("Now: %1", &[&snap.current_prayer.label()]));
 
@@ -325,13 +414,13 @@ impl NamazTimeWindow {
 
                 if is_current {
                     item.badge.set_label(&tr("Now"));
-                    set_css_class(&item.badge, "pill-badge-accent", true);
-                    set_css_class(&item.badge, "pill-badge-subtle", false);
+                    set_css_class(&item.badge, "pill-badge-current", true);
+                    set_css_class(&item.badge, "pill-badge-next", false);
                     item.badge.set_visible(true);
                 } else if is_next {
                     item.badge.set_label(&tr("Next"));
-                    set_css_class(&item.badge, "pill-badge-accent", false);
-                    set_css_class(&item.badge, "pill-badge-subtle", true);
+                    set_css_class(&item.badge, "pill-badge-current", false);
+                    set_css_class(&item.badge, "pill-badge-next", true);
                     item.badge.set_visible(true);
                 } else {
                     item.badge.set_visible(false);
@@ -341,14 +430,5 @@ impl NamazTimeWindow {
 
         imp.source_label
             .set_label(&tr_fmt("Source: %1", &[&snap.today.source.attribution_text()]));
-    }
-}
-
-fn set_css_class(widget: &impl IsA<gtk::Widget>, class_name: &str, active: bool) {
-    let has = widget.has_css_class(class_name);
-    if active && !has {
-        widget.add_css_class(class_name);
-    } else if !active && has {
-        widget.remove_css_class(class_name);
     }
 }

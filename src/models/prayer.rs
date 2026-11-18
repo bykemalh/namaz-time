@@ -111,6 +111,17 @@ impl PrayerName {
             Self::Yatsi => "namaz-yatsi-symbolic",
         }
     }
+
+    pub fn css_key(self) -> &'static str {
+        match self {
+            Self::Imsak => "imsak",
+            Self::Gunes => "gunes",
+            Self::Ogle => "ogle",
+            Self::Ikindi => "ikindi",
+            Self::Aksam => "aksam",
+            Self::Yatsi => "yatsi",
+        }
+    }
 }
 
 impl fmt::Display for PrayerName {
@@ -187,6 +198,106 @@ pub fn parse_hhmm(raw: &str) -> Option<(u8, u8)> {
     } else {
         None
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum HeroTheme {
+    Sultanahmet,
+    Ayasofya,
+    Suleymaniye,
+    Classic,
+}
+
+impl HeroTheme {
+    pub const ALL: [Self; 4] = [
+        Self::Sultanahmet,
+        Self::Ayasofya,
+        Self::Suleymaniye,
+        Self::Classic,
+    ];
+
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Sultanahmet => "sultanahmet",
+            Self::Ayasofya => "ayasofya",
+            Self::Suleymaniye => "suleymaniye",
+            Self::Classic => "classic",
+        }
+    }
+
+    pub fn from_id(s: &str) -> Self {
+        match s.trim().to_ascii_lowercase().as_str() {
+            "ayasofya" => Self::Ayasofya,
+            "suleymaniye" => Self::Suleymaniye,
+            "classic" => Self::Classic,
+            _ => Self::Sultanahmet,
+        }
+    }
+
+    pub fn label(self) -> String {
+        match self {
+            Self::Sultanahmet => tr("Sultanahmet Mosque"),
+            Self::Ayasofya => tr("Hagia Sophia"),
+            Self::Suleymaniye => tr("Süleymaniye Mosque"),
+            Self::Classic => tr("Classic Sky"),
+        }
+    }
+
+    pub fn hero_resource(self, current_prayer: PrayerName) -> String {
+        match self {
+            Self::Sultanahmet => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-sultanahmet.jpg".to_string(),
+            Self::Ayasofya => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-ayasofya.jpg".to_string(),
+            Self::Suleymaniye => "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/mosque-suleymaniye.jpg".to_string(),
+            Self::Classic => format!(
+                "/io/github/bykemalh/namaz_time/NamazTime/backgrounds/prayer-{}-hero.svg",
+                current_prayer.css_key()
+            ),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum UiStyle {
+    Illustrated,
+    Colorful,
+    Minimal,
+}
+
+impl UiStyle {
+    pub const ALL: [Self; 3] = [Self::Illustrated, Self::Colorful, Self::Minimal];
+
+    pub fn id(self) -> &'static str {
+        match self {
+            Self::Illustrated => "illustrated",
+            Self::Colorful => "colorful",
+            Self::Minimal => "minimal",
+        }
+    }
+
+    pub fn from_id(s: &str) -> Self {
+        match s.trim().to_ascii_lowercase().as_str() {
+            "colorful" => Self::Colorful,
+            "minimal" => Self::Minimal,
+            _ => Self::Illustrated,
+        }
+    }
+
+    pub fn label(self) -> String {
+        match self {
+            Self::Illustrated => tr("Illustrated (Mosque & Scenes)"),
+            Self::Colorful => tr("Colorful Icons (Clean Cards)"),
+            Self::Minimal => tr("Minimal (Monochrome Grey)"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AppearanceConfig {
+    pub ui_style: UiStyle,
+    pub hero_theme: HeroTheme,
+    pub colorful_icons: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -640,5 +751,22 @@ mod tests {
             format_localized_date_for(d, AppLang::Ru),
             "15 ноября 2026, воскресенье"
         );
+    }
+
+    #[test]
+    fn hero_themes_and_ui_styles_roundtrip() {
+        assert_eq!(HeroTheme::from_id("sultanahmet"), HeroTheme::Sultanahmet);
+        assert_eq!(HeroTheme::from_id("ayasofya"), HeroTheme::Ayasofya);
+        assert_eq!(HeroTheme::from_id("suleymaniye"), HeroTheme::Suleymaniye);
+        assert_eq!(HeroTheme::from_id("classic"), HeroTheme::Classic);
+        assert_eq!(HeroTheme::from_id("unknown"), HeroTheme::Sultanahmet);
+
+        assert!(HeroTheme::Sultanahmet.hero_resource(PrayerName::Yatsi).ends_with("mosque-sultanahmet.jpg"));
+        assert!(HeroTheme::Classic.hero_resource(PrayerName::Ogle).ends_with("prayer-ogle-hero.svg"));
+
+        assert_eq!(UiStyle::from_id("illustrated"), UiStyle::Illustrated);
+        assert_eq!(UiStyle::from_id("colorful"), UiStyle::Colorful);
+        assert_eq!(UiStyle::from_id("minimal"), UiStyle::Minimal);
+        assert_eq!(UiStyle::from_id("other"), UiStyle::Illustrated);
     }
 }

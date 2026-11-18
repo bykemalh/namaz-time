@@ -9,7 +9,7 @@ use tracing::{debug, info, warn};
 
 use crate::config::VERSION;
 use crate::i18n::{tr, tr_fmt};
-use crate::models::{LocationProfile, PrayerName, TrayLabelFormat};
+use crate::models::{HeroTheme, LocationProfile, PrayerName, TrayLabelFormat, UiStyle};
 use crate::services::{
     AppSettings, CachedDays, DataEvent, DiskCache, PrayerController, TrayCommand, shared_runtime,
     spawn_tray_service,
@@ -121,6 +121,22 @@ impl NamazTimeApplication {
         let about = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
+        let set_hero_theme = gio::ActionEntry::builder("set-hero-theme")
+            .parameter_type(Some(glib::VariantTy::STRING))
+            .activate(move |app: &Self, _, param| {
+                if let Some(id) = param.and_then(|v| v.str()) {
+                    app.settings().set_hero_theme(HeroTheme::from_id(id));
+                }
+            })
+            .build();
+        let set_ui_style = gio::ActionEntry::builder("set-ui-style")
+            .parameter_type(Some(glib::VariantTy::STRING))
+            .activate(move |app: &Self, _, param| {
+                if let Some(id) = param.and_then(|v| v.str()) {
+                    app.settings().set_ui_style(UiStyle::from_id(id));
+                }
+            })
+            .build();
         let quit = gio::ActionEntry::builder("quit")
             .activate(move |app: &Self, _, _| app.quit_gracefully())
             .build();
@@ -131,6 +147,8 @@ impl NamazTimeApplication {
             preferences,
             shortcuts,
             about,
+            set_hero_theme,
+            set_ui_style,
             quit,
         ]);
     }
@@ -225,7 +243,12 @@ impl NamazTimeApplication {
             settings.raw().connect_changed(None, move |_, key| {
                 match key {
                     "run-in-background" => app.sync_hold_guard(),
-                    "show-tray-label" | "tray-label-format" | "show-seconds" => {
+                    "show-tray-label"
+                    | "tray-label-format"
+                    | "show-seconds"
+                    | "hero-theme"
+                    | "ui-style"
+                    | "colorful-icons" => {
                         app.sync_tray_and_views(false);
                     }
                     _ => {}
@@ -288,6 +311,7 @@ impl NamazTimeApplication {
         }
 
         let win = NamazTimeWindow::new(self);
+        win.apply_appearance(self.settings().appearance());
         if let Some(online) = *self.imp().tray_watcher_online.borrow() {
             win.set_tray_warning(!online);
         }
@@ -607,10 +631,13 @@ impl NamazTimeApplication {
         snapshot: Option<&crate::models::ScheduleSnapshot>,
         error_msg: Option<&str>,
     ) {
-        let show_seconds = self.settings().show_seconds();
+        let settings = self.settings();
+        let show_seconds = settings.show_seconds();
+        let appearance = settings.appearance();
+        win.apply_appearance(appearance);
         match (profile, snapshot, error_msg) {
             (None, _, _) => win.show_empty(),
-            (Some(loc), Some(snap), _) => win.render_snapshot(loc, snap, show_seconds),
+            (Some(loc), Some(snap), _) => win.render_snapshot(loc, snap, show_seconds, appearance),
             (Some(loc), None, Some(err)) => win.show_error(loc, err),
             (Some(loc), None, None) => win.show_loading(loc),
         }

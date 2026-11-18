@@ -1,20 +1,18 @@
+.location-chip {
+  padding: 4px 10px;
+}
+
+/* --- Shared Base Layout --- */
 .hero-card {
-  padding: 22px;
   border-radius: 16px;
 }
 
 .countdown-digits {
   font-variant-numeric: tabular-nums;
-  font-size: 3.1rem;
+  font-size: 2.45rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  line-height: 1.08;
-}
-
-.prayer-time-digits {
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-  font-size: 1.05rem;
+  line-height: 1.06;
 }
 
 .pill-badge {
@@ -24,34 +22,330 @@
   font-weight: 700;
 }
 
-.pill-badge-accent {
-  background-color: alpha(@accent_bg_color, 0.16);
-  color: @accent_color;
+.hero-status-pill {
+  padding: 4px 12px;
 }
 
-.pill-badge-subtle {
+progressbar.hero-progress trough,
+progressbar.hero-progress progress {
+  min-height: 6px;
+  border-radius: 999px;
+}
+
+list.prayers-list {
+  border-radius: 12px;
+}
+
+list.prayers-list > row.prayer-row {
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.prayer-row-overlay {
+  min-height: 58px;
+}
+
+.prayer-row-scrim {
+  min-height: 34px;
+  padding: 12px 16px;
+}
+
+.prayer-row-title {
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+
+.prayer-time-digits {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.06rem;
+}
+
+/* =========================================================
+   THEME 1: ILLUSTRATED (3D Mosque Hero + SVG Prayer Scenes)
+   ========================================================= */
+.ui-style-illustrated .hero-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  background-color: #0b1c24;
+}
+
+.ui-style-illustrated .hero-info-panel {
+  padding: 18px 12px 18px 20px;
+}
+
+.ui-style-illustrated .hero-media-panel {
+  min-height: 210px;
+}
+
+.ui-style-illustrated .hero-theme-sultanahmet {
+  background-color: #0a242c;
+}
+.ui-style-illustrated .hero-theme-sultanahmet .hero-media-fade {
+  background-image: linear-gradient(90deg, #0a242c 0%, rgba(10, 36, 44, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-ayasofya {
+  background-color: #1f2027;
+}
+.ui-style-illustrated .hero-theme-ayasofya .hero-media-fade {
+  background-image: linear-gradient(90deg, #1f2027 0%, rgba(31, 32, 39, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-suleymaniye {
+  background-color: #0b1b20;
+}
+.ui-style-illustrated .hero-theme-suleymaniye .hero-media-fade {
+  background-image: linear-gradient(90deg, #0b1b20 0%, rgba(11, 27, 32, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-theme-classic {
+  background-color: #0c1922;
+}
+.ui-style-illustrated .hero-theme-classic .hero-media-fade {
+  background-image: linear-gradient(90deg, #0c1922 0%, rgba(12, 25, 34, 0.0) 28%);
+}
+
+.ui-style-illustrated .hero-fg {
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.ui-style-illustrated .hero-meta-label {
+  color: rgba(255, 255, 255, 0.84);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.ui-style-illustrated .hero-status-pill {
+  background-color: rgba(22, 163, 74, 0.88);
+  border: 1px solid rgba(74, 222, 128, 0.55);
+  color: #ffffff;
+}
+
+.ui-style-illustrated progressbar.hero-progress trough {
+  background-color: rgba(255, 255, 255, 0.22);
+}
+
+.ui-style-illustrated progressbar.hero-progress progress {
+  background-color: #22c55e;
+}
+
+.ui-style-illustrated list.prayers-list > row.prayer-row:first-child .prayer-row-overlay {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.ui-style-illustrated list.prayers-list > row.prayer-row:last-child .prayer-row-overlay {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.ui-style-illustrated list.prayers-list > row.prayer-row.prayer-row-current .prayer-row-overlay {
+  border-radius: 12px;
+}
+
+.ui-style-illustrated .prayer-row-scrim {
+  background-image: linear-gradient(
+    90deg,
+    rgba(6, 12, 20, 0.44) 0%,
+    rgba(6, 12, 20, 0.08) 46%,
+    rgba(6, 12, 20, 0.40) 100%
+  );
+}
+
+.ui-style-illustrated list.prayers-list > row.prayer-row:not(:last-child):not(.prayer-row-current) .prayer-row-scrim {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.ui-style-illustrated list.prayers-list > row.prayer-row.prayer-row-current .prayer-row-scrim {
+  border: 2px solid #2ee59d;
+  border-radius: 12px;
+  box-shadow: inset 0 0 14px rgba(46, 229, 157, 0.24);
+}
+
+.ui-style-illustrated .prayer-row-icon,
+.ui-style-illustrated .prayer-row-title,
+.ui-style-illustrated .prayer-time-digits {
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+}
+
+.ui-style-illustrated .pill-badge-current {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.ui-style-illustrated .pill-badge-next {
+  background-color: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+/* Luminous prayer icon tints on dark sky scenes */
+.ui-style-illustrated.icons-colorful .prayer-icon-imsak { color: #a5b4fc; }
+.ui-style-illustrated.icons-colorful .prayer-icon-gunes { color: #fbbf24; }
+.ui-style-illustrated.icons-colorful .prayer-icon-ogle  { color: #fde047; }
+.ui-style-illustrated.icons-colorful .prayer-icon-ikindi { color: #fb923c; }
+.ui-style-illustrated.icons-colorful .prayer-icon-aksam { color: #f87171; }
+.ui-style-illustrated.icons-colorful .prayer-icon-yatsi { color: #5eead4; }
+
+/* =========================================================
+   THEME 2: COLORFUL ICONS (Clean Native Adwaita Cards)
+   ========================================================= */
+.ui-style-colorful .hero-card {
+  background-color: @card_bg_color;
+  border: 1px solid alpha(@window_fg_color, 0.10);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.ui-style-colorful .hero-info-panel {
+  padding: 20px 22px;
+}
+
+.ui-style-colorful .hero-fg {
+  color: @card_fg_color;
+}
+
+.ui-style-colorful .hero-meta-label {
+  color: alpha(@card_fg_color, 0.68);
+}
+
+.ui-style-colorful .hero-status-pill {
+  background-color: #16a34a;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  color: #ffffff;
+}
+
+.ui-style-colorful progressbar.hero-progress trough {
+  background-color: alpha(@window_fg_color, 0.12);
+}
+
+.ui-style-colorful progressbar.hero-progress progress {
+  background-color: #22c55e;
+}
+
+.ui-style-colorful .prayer-row-overlay {
+  min-height: 50px;
+}
+
+.ui-style-colorful .prayer-row-scrim {
+  min-height: 30px;
+  padding: 10px 16px;
+}
+
+.ui-style-colorful list.prayers-list > row.prayer-row:not(:last-child):not(.prayer-row-current) .prayer-row-scrim {
+  border-bottom: 1px solid alpha(@window_fg_color, 0.09);
+}
+
+.ui-style-colorful list.prayers-list > row.prayer-row.prayer-row-current .prayer-row-scrim {
+  background-color: rgba(22, 163, 74, 0.12);
+  border: 1.5px solid rgba(34, 197, 94, 0.68);
+  border-radius: 12px;
+}
+
+.ui-style-colorful .prayer-row-icon {
+  color: alpha(@card_fg_color, 0.78);
+}
+
+.ui-style-colorful .prayer-row-title,
+.ui-style-colorful .prayer-time-digits {
+  color: @card_fg_color;
+}
+
+.ui-style-colorful .pill-badge-current {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.ui-style-colorful .pill-badge-next {
+  background-color: alpha(@window_fg_color, 0.10);
+  color: alpha(@window_fg_color, 0.84);
+}
+
+/* Vibrant prayer icon accents for clean Adwaita light & dark cards */
+.ui-style-colorful.icons-colorful .prayer-icon-imsak { color: #6366f1; }
+.ui-style-colorful.icons-colorful .prayer-icon-gunes { color: #f59e0b; }
+.ui-style-colorful.icons-colorful .prayer-icon-ogle  { color: #eab308; }
+.ui-style-colorful.icons-colorful .prayer-icon-ikindi { color: #f97316; }
+.ui-style-colorful.icons-colorful .prayer-icon-aksam { color: #ef4444; }
+.ui-style-colorful.icons-colorful .prayer-icon-yatsi { color: #14b8a6; }
+
+/* =========================================================
+   THEME 3: MINIMAL (Monochrome Full Grey Adwaita)
+   ========================================================= */
+.ui-style-minimal .hero-card {
+  background-color: @card_bg_color;
+  border: 1px solid alpha(@window_fg_color, 0.10);
+  box-shadow: none;
+}
+
+.ui-style-minimal .hero-info-panel {
+  padding: 20px 22px;
+}
+
+.ui-style-minimal .hero-fg {
+  color: @card_fg_color;
+}
+
+.ui-style-minimal .hero-meta-label {
+  color: alpha(@card_fg_color, 0.65);
+}
+
+.ui-style-minimal .hero-status-pill {
+  background-color: alpha(@window_fg_color, 0.11);
+  border: 1px solid alpha(@window_fg_color, 0.16);
+  color: @card_fg_color;
+}
+
+.ui-style-minimal progressbar.hero-progress trough {
+  background-color: alpha(@window_fg_color, 0.13);
+}
+
+.ui-style-minimal progressbar.hero-progress progress {
+  background-color: alpha(@window_fg_color, 0.56);
+}
+
+.ui-style-minimal .prayer-row-overlay {
+  min-height: 50px;
+}
+
+.ui-style-minimal .prayer-row-scrim {
+  min-height: 30px;
+  padding: 10px 16px;
+}
+
+.ui-style-minimal list.prayers-list > row.prayer-row:not(:last-child):not(.prayer-row-current) .prayer-row-scrim {
+  border-bottom: 1px solid alpha(@window_fg_color, 0.09);
+}
+
+.ui-style-minimal list.prayers-list > row.prayer-row.prayer-row-current .prayer-row-scrim {
   background-color: alpha(@window_fg_color, 0.08);
-  color: alpha(@window_fg_color, 0.75);
+  border: 1.5px solid alpha(@window_fg_color, 0.28);
+  border-radius: 12px;
 }
 
-.prayer-row-current {
-  background-color: alpha(@accent_bg_color, 0.10);
+.ui-style-minimal .prayer-row-icon {
+  color: alpha(@card_fg_color, 0.68);
 }
 
-.prayer-row-next {
-  background-color: alpha(@accent_bg_color, 0.05);
+.ui-style-minimal list.prayers-list > row.prayer-row.prayer-row-current .prayer-row-icon {
+  color: @card_fg_color;
 }
 
-.location-chip {
-  padding: 4px 10px;
+.ui-style-minimal .prayer-row-title,
+.ui-style-minimal .prayer-time-digits {
+  color: @card_fg_color;
 }
 
-.hero-progress trough {
-  min-height: 6px;
-  border-radius: 999px;
+.ui-style-minimal .pill-badge-current {
+  background-color: alpha(@window_fg_color, 0.18);
+  color: @card_fg_color;
 }
 
-.hero-progress progress {
-  min-height: 6px;
-  border-radius: 999px;
+.ui-style-minimal .pill-badge-next {
+  background-color: alpha(@window_fg_color, 0.09);
+  color: alpha(@card_fg_color, 0.78);
 }

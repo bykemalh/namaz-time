@@ -2,7 +2,7 @@ use adw::prelude::*;
 use gtk::{gio, glib};
 
 use crate::i18n::{request_restart, tr, tr_fmt};
-use crate::models::TrayLabelFormat;
+use crate::models::{HeroTheme, TrayLabelFormat, UiStyle};
 use crate::services::{AppSettings, portal};
 
 pub fn show_preferences_dialog(
@@ -100,9 +100,56 @@ pub fn show_preferences_dialog(
     location_group.add(&source_row);
     page.add(&location_group);
 
-    // --- Group 2: GNOME Top Bar & Countdown ---
+    // --- Group 2: Appearance ---
+    let appearance_group = adw::PreferencesGroup::builder()
+        .title(tr("Appearance"))
+        .build();
+
+    let style_labels: Vec<String> = UiStyle::ALL.iter().map(|s| s.label()).collect();
+    let style_strs: Vec<&str> = style_labels.iter().map(String::as_str).collect();
+    let style_options = gtk::StringList::new(&style_strs);
+    let current_ui_style = settings.ui_style();
+    let ui_style_row = adw::ComboRow::builder()
+        .title(tr("Interface theme"))
+        .subtitle(tr("Choose between visual scenes, clean colorful icons, or monochrome grey"))
+        .model(&style_options)
+        .build();
+    let initial_style_idx = UiStyle::ALL
+        .iter()
+        .position(|&s| s == current_ui_style)
+        .unwrap_or(0) as u32;
+    ui_style_row.set_selected(initial_style_idx);
+
+    let theme_labels: Vec<String> = HeroTheme::ALL.iter().map(|t| t.label()).collect();
+    let theme_strs: Vec<&str> = theme_labels.iter().map(String::as_str).collect();
+    let theme_options = gtk::StringList::new(&theme_strs);
+    let hero_theme_row = adw::ComboRow::builder()
+        .title(tr("Hero Card Scene"))
+        .subtitle(tr("Choose the 3D mosque scene or dynamic sky for the countdown card"))
+        .model(&theme_options)
+        .sensitive(current_ui_style == UiStyle::Illustrated)
+        .build();
+    let initial_theme_idx = HeroTheme::ALL
+        .iter()
+        .position(|&t| t == settings.hero_theme())
+        .unwrap_or(0) as u32;
+    hero_theme_row.set_selected(initial_theme_idx);
+
+    let colorful_icons_row = adw::SwitchRow::builder()
+        .title(tr("Colorful prayer icons"))
+        .subtitle(tr("Color each prayer icon to match its time of day"))
+        .active(settings.colorful_icons())
+        .sensitive(current_ui_style != UiStyle::Minimal)
+        .build();
+
+    appearance_group.add(&ui_style_row);
+    appearance_group.add(&hero_theme_row);
+    appearance_group.add(&colorful_icons_row);
+    page.add(&appearance_group);
+
+    // --- Group 3: GNOME Top Bar & Countdown ---
     let display_group = adw::PreferencesGroup::builder()
-        .title(tr("GNOME Top Bar & Countdown"))
+        .title(glib::markup_escape_text(&tr("GNOME Top Bar & Countdown")))
         .build();
 
     let show_tray_label_row = adw::SwitchRow::builder()
@@ -235,6 +282,43 @@ pub fn show_preferences_dialog(
         let on_changed = on_changed.clone();
         move |row| {
             settings.set_show_seconds(row.is_active());
+            on_changed();
+        }
+    });
+
+    ui_style_row.connect_selected_notify({
+        let settings = settings.clone();
+        let hero_theme_row = hero_theme_row.clone();
+        let colorful_icons_row = colorful_icons_row.clone();
+        let on_changed = on_changed.clone();
+        move |row| {
+            let idx = row.selected() as usize;
+            if let Some(&style) = UiStyle::ALL.get(idx) {
+                settings.set_ui_style(style);
+                hero_theme_row.set_sensitive(style == UiStyle::Illustrated);
+                colorful_icons_row.set_sensitive(style != UiStyle::Minimal);
+                on_changed();
+            }
+        }
+    });
+
+    hero_theme_row.connect_selected_notify({
+        let settings = settings.clone();
+        let on_changed = on_changed.clone();
+        move |row| {
+            let idx = row.selected() as usize;
+            if let Some(&theme) = HeroTheme::ALL.get(idx) {
+                settings.set_hero_theme(theme);
+                on_changed();
+            }
+        }
+    });
+
+    colorful_icons_row.connect_active_notify({
+        let settings = settings.clone();
+        let on_changed = on_changed.clone();
+        move |row| {
+            settings.set_colorful_icons(row.is_active());
             on_changed();
         }
     });

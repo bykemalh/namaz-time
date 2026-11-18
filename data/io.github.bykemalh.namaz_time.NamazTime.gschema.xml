@@ -41,5 +41,20 @@
       <summary>Application language</summary>
       <description>Display language override: system, tr, en, or ru.</description>
     </key>
+    <key name="hero-theme" type="s">
+      <default>"sultanahmet"</default>
+      <summary>Hero card background theme</summary>
+      <description>Selected hero card scene: sultanahmet, ayasofya, suleymaniye, or classic.</description>
+    </key>
+    <key name="ui-style" type="s">
+      <default>"illustrated"</default>
+      <summary>Interface visual style</summary>
+      <description>UI theme style: illustrated, colorful, or minimal.</description>
+    </key>
+    <key name="colorful-icons" type="b">
+      <default>true</default>
+      <summary>Colorful prayer icons</summary>
+      <description>Tint each prayer icon with its time-of-day accent color when not in minimal mode.</description>
+    </key>
   </schema>
 </schemalist>

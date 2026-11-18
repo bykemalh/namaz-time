@@ -2,7 +2,9 @@ use gtk::gio;
 use gtk::prelude::*;
 use tracing::warn;
 
-use crate::models::{LocationProfile, ProviderKind, TrayLabelFormat};
+use crate::models::{
+    AppearanceConfig, HeroTheme, LocationProfile, ProviderKind, TrayLabelFormat, UiStyle,
+};
 
 pub const APP_ID: &str = "io.github.bykemalh.namaz_time.NamazTime";
 
@@ -108,5 +110,37 @@ impl AppSettings {
 
     pub fn set_app_language(&self, lang: &str) {
         let _ = self.inner.set_string("app-language", lang);
+    }
+
+    pub fn hero_theme(&self) -> HeroTheme {
+        HeroTheme::from_id(&self.inner.string("hero-theme"))
+    }
+
+    pub fn set_hero_theme(&self, theme: HeroTheme) {
+        let _ = self.inner.set_string("hero-theme", theme.id());
+    }
+
+    pub fn ui_style(&self) -> UiStyle {
+        UiStyle::from_id(&self.inner.string("ui-style"))
+    }
+
+    pub fn set_ui_style(&self, style: UiStyle) {
+        let _ = self.inner.set_string("ui-style", style.id());
+    }
+
+    pub fn colorful_icons(&self) -> bool {
+        self.inner.boolean("colorful-icons")
+    }
+
+    pub fn set_colorful_icons(&self, enabled: bool) {
+        let _ = self.inner.set_boolean("colorful-icons", enabled);
+    }
+
+    pub fn appearance(&self) -> AppearanceConfig {
+        AppearanceConfig {
+            ui_style: self.ui_style(),
+            hero_theme: self.hero_theme(),
+            colorful_icons: self.colorful_icons(),
+        }
     }
 }
